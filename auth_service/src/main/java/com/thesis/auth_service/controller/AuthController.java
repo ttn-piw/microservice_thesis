@@ -2,6 +2,7 @@ package com.thesis.auth_service.controller;
 
 import com.thesis.auth_service.dto.request.LoginRequest;
 import com.thesis.auth_service.dto.response.ApiResponse;
+import com.thesis.auth_service.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -15,7 +16,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
+    @Autowired
+    AuthService authService;
+
     Logger log = LoggerFactory.getLogger(AuthController.class);
+
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllAuth(){
+        if (authService.getAll().isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Can not retrieve data");
+
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getAll());
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login (HttpServletRequest request,@Valid @RequestBody(required = true) LoginRequest loginRequest){

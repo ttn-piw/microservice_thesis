@@ -11,23 +11,24 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Student {
+@Document(value = "auth")
+public class Auth {
     @Id
     String id;
 
-    Set<String> roles;
+    String user_id;
 
-    String studentId;
-
-    String schoolCode;
-
-    String name;
-
-    String gender;
+    String username;
 
     String email;
 
     String password;
 
-    String createAt;
+    Set<String> roles;
+
+    String status;
+
+    String created_at;
+
+    String updated_at;
 }
