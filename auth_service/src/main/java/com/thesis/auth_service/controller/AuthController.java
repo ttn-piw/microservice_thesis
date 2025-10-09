@@ -45,7 +45,7 @@ public class AuthController {
                 .data(null)
                 .build();
 
-        return  ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
@@ -54,10 +54,13 @@ public class AuthController {
 
         String path = request.getMethod() + " " + request.getRequestURI() ;
         log.info(path);
-        ApiResponse<Object> response = ApiResponse.<Object>builder()
-                .code(200)
-                .message("SUCCESS")
-                .data("Hello World")
+
+        ApiResponse responseData = authService.login(loginRequest);
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .message(responseData.getMessage())
+                .code(responseData.getCode())
+                .data(responseData.getData())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
