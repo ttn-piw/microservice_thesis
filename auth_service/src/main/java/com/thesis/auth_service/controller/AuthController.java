@@ -1,6 +1,7 @@
 package com.thesis.auth_service.controller;
 
 import com.thesis.auth_service.dto.request.LoginRequest;
+import com.thesis.auth_service.dto.request.RegisterRequest;
 import com.thesis.auth_service.dto.response.ApiResponse;
 import com.thesis.auth_service.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,25 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK).body(authService.getAll());
     }
+
+    //Register
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse> register(HttpServletRequest request, @Valid @RequestBody(required = true) RegisterRequest registerRequest){
+        String path = request.getMethod() + " " + request.getRequestURI() ;
+
+        log.info(path);
+
+        ApiResponse responseData = authService.register(registerRequest);
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .message(responseData.getMessage())
+                .code(responseData.getCode())
+                .data(null)
+                .build();
+
+        return  ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login (HttpServletRequest request,@Valid @RequestBody(required = true) LoginRequest loginRequest){
