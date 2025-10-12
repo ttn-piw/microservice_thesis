@@ -25,6 +25,11 @@ public class UsersController {
 
     Logger log = LoggerFactory.getLogger(UsersController.class);
 
+    @GetMapping("/test")
+    public String testUserService() {
+        return "Test from User Service!";
+    }
+
     @GetMapping("")
     public List<User> getStudents(){
         return userService.getAllStudents();

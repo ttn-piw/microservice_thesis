@@ -22,10 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -54,7 +51,11 @@ public class AuthService {
         if (!request.getPassword().equals(request.getRePassword()))
             return ApiResponse.builder().code(400).message("Password is not matched").data(null).build();
 
+        //Random user_id for microservice
+        String userId = UUID.randomUUID().toString();
+
         Auth registerUser = new Auth();
+        registerUser.setUser_id(userId);
         registerUser.setEmail(request.getEmail());
         registerUser.setUsername(request.getUsername());
         registerUser.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -71,7 +72,7 @@ public class AuthService {
         return ApiResponse.builder()
                 .code(200)
                 .message("Register new account successfully!")
-                .data(null)
+                .data(registerUser)
                 .build();
     }
 

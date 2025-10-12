@@ -3,6 +3,7 @@ package com.thesis.auth_service.controller;
 import com.thesis.auth_service.dto.request.LoginRequest;
 import com.thesis.auth_service.dto.request.RegisterRequest;
 import com.thesis.auth_service.dto.response.ApiResponse;
+import com.thesis.auth_service.repository.httpClient.UserClient;
 import com.thesis.auth_service.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -16,9 +17,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
     @Autowired
     AuthService authService;
+
+    @Autowired
+    private UserClient userClient;
+
+    @GetMapping("/testFeign")
+    public String testFeign() {
+        return userClient.callUserService();
+    }
 
     Logger log = LoggerFactory.getLogger(AuthController.class);
 
@@ -42,7 +50,7 @@ public class AuthController {
         ApiResponse<Object> response = ApiResponse.builder()
                 .message(responseData.getMessage())
                 .code(responseData.getCode())
-                .data(null)
+                .data(responseData.getData())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
