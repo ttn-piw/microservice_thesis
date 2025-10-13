@@ -6,9 +6,11 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.thesis.auth_service.document.Auth;
 import com.thesis.auth_service.dto.request.LoginRequest;
 import com.thesis.auth_service.dto.request.RegisterRequest;
+import com.thesis.auth_service.dto.request.UserRequest;
 import com.thesis.auth_service.dto.response.ApiResponse;
 import com.thesis.auth_service.dto.response.TokenResponse;
 import com.thesis.auth_service.repository.AuthRepository;
+import com.thesis.auth_service.repository.httpClient.UserClient;
 import lombok.experimental.NonFinal;
 import lombok.var;
 import org.slf4j.Logger;
@@ -28,6 +30,9 @@ import java.util.*;
 public class AuthService {
     @Autowired
     AuthRepository authRepository;
+
+    @Autowired
+    UserClient userClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -68,6 +73,19 @@ public class AuthService {
         registerUser.setUpdated_at(getCurrentTime.toString());
 
         authRepository.save(registerUser);
+
+        //Send data to user_service
+        UserRequest data = new UserRequest(
+                userId,
+                request.getName(),
+                request.getPhone(),
+                request.getGender(),
+                request.getAvatar(),
+                request.getBirthday()
+        );
+
+        //Calling feign
+        userClient.createUserFeign(data);
 
         return ApiResponse.builder()
                 .code(200)

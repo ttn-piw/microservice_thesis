@@ -53,6 +53,7 @@ public class UserService {
        new_user.setPhone(request.getPhone());
        new_user.setAvatar(request.getAvatar());
        new_user.setBirthday(request.getBirthday());
+       new_user.setUser_id(request.getUser_id());
 
        log.info(new_user.toString());
 

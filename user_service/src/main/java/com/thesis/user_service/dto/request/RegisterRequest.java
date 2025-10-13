@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
+    String user_id;
+
     @NotBlank(message = "Name must not be empty")
     @Size(max = 100, message = "Name must not exceed 100 characters")
     String name;
