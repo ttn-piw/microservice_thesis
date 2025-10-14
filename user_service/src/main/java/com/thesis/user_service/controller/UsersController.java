@@ -30,7 +30,7 @@ public class UsersController {
         return "Test from User Service!";
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public List<User> getStudents(){
         return userService.getAllStudents();
     }

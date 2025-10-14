@@ -23,6 +23,11 @@ public class AuthController {
     @Autowired
     private UserClient userClient;
 
+    @GetMapping("/test")
+    public String testApiGateway(){
+        return "It's is auth service";
+    }
+
     @GetMapping("/testFeign")
     public String testFeign() {
         return userClient.callUserService();
