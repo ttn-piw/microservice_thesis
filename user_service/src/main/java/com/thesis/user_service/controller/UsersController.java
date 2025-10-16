@@ -66,7 +66,6 @@ public class UsersController {
     public ResponseEntity<ApiResponse> registerAccount (HttpServletRequest http,@RequestBody RegisterRequest request){
         String path = http.getMethod() + " " + http.getRequestURI() + (http.getQueryString() != null ? "?" + http.getQueryString() : "") ;
         log.info(path);
-        log.info("Data from feign",request);
 
         log.info(request.toString());
         ApiResponse response = userService.registerUser(request);

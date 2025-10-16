@@ -72,20 +72,29 @@ public class AuthService {
         registerUser.setCreated_at(getCurrentTime.toString());
         registerUser.setUpdated_at(getCurrentTime.toString());
 
-        authRepository.save(registerUser);
+        Auth savedNewUser = authRepository.save(registerUser);
 
-        //Send data to user_service
-        UserRequest data = new UserRequest(
-                userId,
-                request.getName(),
-                request.getPhone(),
-                request.getGender(),
-                request.getAvatar(),
-                request.getBirthday()
-        );
+        try {
+            //Send data to user_service
+            UserRequest data = new UserRequest();
+            data.setUser_id(userId);
+            data.setName(request.getName());
+            data.setGender(request.getGender());
+            data.setPhone(request.getPhone());
+            data.setAvatar(request.getAvatar());
+            data.setBirthday(request.getBirthday());
 
-        //Calling feign
-        userClient.createUserFeign(data);
+            //Calling feign
+            userClient.createUserFeign(data);
+        } catch (Exception e) {
+            authRepository.deleteById(savedNewUser.getId());
+
+            return ApiResponse.builder()
+                    .code(500)
+                    .message("An error occurred during registration. Please try again.")
+                    .data(null)
+                    .build();
+        }
 
         return ApiResponse.builder()
                 .code(200)
