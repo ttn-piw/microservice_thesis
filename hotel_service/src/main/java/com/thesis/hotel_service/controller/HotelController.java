@@ -1,5 +1,6 @@
 package com.thesis.hotel_service.controller;
 
+import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.service.HotelService;
@@ -10,10 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,5 +49,20 @@ public class HotelController {
 
         ApiResponse response = hotelService.getHotelById(uuid);
         return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/createHotel")
+    public ResponseEntity<ApiResponse> createNewHotel(HttpServletRequest request, @RequestBody NewHotelRequest newHotel){
+        String path = request.getMethod() + " " + request.getRequestURI();
+
+        log.info(path);
+
+        log.info(newHotel.toString());
+
+        ApiResponse response = hotelService.createNewHotel(newHotel);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(response);
+
     }
 }

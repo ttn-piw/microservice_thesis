@@ -7,4 +7,8 @@ import java.util.UUID;
 
 public interface HotelRepository extends JpaRepository<Hotel, UUID> {
     Hotel findHotelById(UUID id);
+
+    Hotel findHotelByEmail(String email);
+
+    Boolean existsByNameAndCity(String name, String city);
 }
