@@ -2,9 +2,7 @@ package com.thesis.hotel_service.controller;
 
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
-import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.service.HotelService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

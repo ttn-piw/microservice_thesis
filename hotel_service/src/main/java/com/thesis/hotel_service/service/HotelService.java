@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,17 +75,41 @@ public class HotelService {
                     .build();
 
         //Handle validation for Check out time before Check in time
-        LocalTime check_in = LocalTime.parse(hotelRequest.getCheck_in_time());
-        LocalTime check_out = LocalTime.parse(hotelRequest.getCheck_out_time());
-        if (!check_out.isBefore(check_in))
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime checkIn = LocalTime.parse(hotelRequest.getCheck_in_time(), formatter);
+        LocalTime checkOut = LocalTime.parse(hotelRequest.getCheck_out_time(), formatter);
+        if (!checkOut.isBefore(checkIn))
             return ApiResponse.builder()
                     .code(HttpStatus.CONFLICT.value())
                     .message("Check-out time must be before check-in time")
                     .data(null)
                     .build();
 
-
         log.info(hotelRequest.toString());
+
+        //Saving new hotel
+        Hotel newHotel = new Hotel();
+        newHotel.setName(hotelRequest.getName());
+        newHotel.setDescription(hotelRequest.getDescription());
+        newHotel.setStar_rating(hotelRequest.getStar_rating());
+        newHotel.setAddress_line(hotelRequest.getAddress_line());
+        newHotel.setCity(hotelRequest.getCity());
+        newHotel.setState_province(hotelRequest.getState_province());
+        newHotel.setPostal_code(hotelRequest.getPostal_code());
+        newHotel.setCountry(hotelRequest.getCountry());
+        newHotel.setPhone_number(hotelRequest.getPhone_number());
+        newHotel.setEmail(hotelRequest.getEmail());
+
+        //Handle to save datetime format
+        OffsetDateTime getCurrentTime = OffsetDateTime.now();
+        newHotel.setCreated_at(getCurrentTime);
+        newHotel.setUpdated_at(getCurrentTime);
+        newHotel.setCheck_in_time(checkIn);
+        newHotel.setCheck_out_time(checkOut);
+
+        log.info(newHotel.toString());
+
+        hotelRepository.save(newHotel);
 
         return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(null).build();
     }

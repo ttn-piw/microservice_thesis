@@ -1,16 +1,16 @@
 package com.thesis.hotel_service.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 
@@ -31,9 +31,11 @@ public class Hotel {
 
     String description;
 
-    @Size(min = 1, max = 5)
-    @NotNull(message = "Hotel's must not empty")
-    Integer star_rating;
+    @NotNull(message = "Hotel's star rating must not be empty")
+    @Min(value = 1, message = "Star rating must be at least 1")
+    @Max(value = 5, message = "Star rating must not exceed 5")
+    private Integer star_rating;
+
 
     @NotNull
     String address_line;
@@ -51,11 +53,15 @@ public class Hotel {
     @Email
     String email;
 
-    String check_in_time;
+    @Column(name = "check_in_time", columnDefinition = "TIME")
+    LocalTime check_in_time;
 
-    String check_out_time;
+    @Column(name = "check_out_time", columnDefinition = "TIME")
+    LocalTime check_out_time;
 
-    String created_at;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    OffsetDateTime created_at;
 
-    String updated_at;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    OffsetDateTime updated_at;
 }
