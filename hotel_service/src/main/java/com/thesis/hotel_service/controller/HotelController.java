@@ -62,4 +62,14 @@ public class HotelController {
         return ResponseEntity.status(status).body(response);
 
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteHotelById(@PathVariable("id") UUID hotelId, HttpServletRequest request){
+        String path = request.getMethod() + " " + request.getRequestURI() + "/" + hotelId ;
+
+        log.info(path);
+
+        ApiResponse response = hotelService.deleteHotelById(hotelId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }

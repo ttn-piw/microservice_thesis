@@ -113,4 +113,20 @@ public class HotelService {
 
         return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(null).build();
     }
+
+    public ApiResponse deleteHotelById(UUID uuid){
+        if (hotelRepository.findHotelById(uuid) == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format("FAIL: NOT FOUND hotel with id: %s not found", uuid.toString()))
+                    .data(null)
+                    .build();
+
+        hotelRepository.deleteById(uuid);
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message(String.format("SUCCESSFULLY: HOTEL DELETED with ID: %s", uuid.toString()))
+                .data(null)
+                .build();
+    }
 }
