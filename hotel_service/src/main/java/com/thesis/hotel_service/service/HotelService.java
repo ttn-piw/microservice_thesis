@@ -1,7 +1,9 @@
 package com.thesis.hotel_service.service;
 
+import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.repository.HotelRepository;
 import org.slf4j.Logger;
@@ -21,6 +23,9 @@ import java.util.UUID;
 public class HotelService {
     @Autowired
     HotelRepository hotelRepository;
+
+    @Autowired
+    HotelMapper hotelMapper;
 
     Logger log = LoggerFactory.getLogger(HotelService.class);
 
@@ -112,6 +117,51 @@ public class HotelService {
         hotelRepository.save(newHotel);
 
         return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(null).build();
+    }
+
+    public ApiResponse updatedHotelInfo(UUID hotelId, HotelUpdateRequest hotelInfo){
+        Hotel getHotelUpdated = hotelRepository.findHotelById(hotelId);
+        //Check existed hotels
+        if (getHotelUpdated == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format(("Hotel not found with id: %s"), hotelId.toString()))
+                    .data(null)
+                    .build();
+
+        //Handle validation before updated info
+        if (hotelRepository.findHotelByEmail(hotelInfo.getEmail()) != null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.CONFLICT.value())
+                    .message("Email exited!")
+                    .data(null)
+                    .build();
+
+        //Handle validation for Check out time before Check in time
+        if (hotelInfo.getCheck_in_time() != null && hotelInfo.getCheck_out_time() !=null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime checkIn = LocalTime.parse(hotelInfo.getCheck_in_time(), formatter);
+            LocalTime checkOut = LocalTime.parse(hotelInfo.getCheck_out_time(), formatter);
+            if (!checkOut.isBefore(checkIn))
+                return ApiResponse.builder()
+                        .code(HttpStatus.CONFLICT.value())
+                        .message("Check-out time must be before check-in time")
+                        .data(null)
+                        .build();
+        }
+
+        log.info(hotelInfo.toString());
+        hotelMapper.updatedHotel(getHotelUpdated, hotelInfo);
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        getHotelUpdated.setUpdated_at(currentTime);
+
+        hotelRepository.save(getHotelUpdated);
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("SUCCESSFULLY: UPDATED new hotel's info")
+                .data(null)
+                .build();
     }
 
     public ApiResponse deleteHotelById(UUID uuid){

@@ -36,7 +36,6 @@ public class Hotel {
     @Max(value = 5, message = "Star rating must not exceed 5")
     private Integer star_rating;
 
-
     @NotNull
     String address_line;
 

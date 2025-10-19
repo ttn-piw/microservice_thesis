@@ -1,9 +1,11 @@
 package com.thesis.hotel_service.controller;
 
+import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.service.HotelService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,22 @@ public class HotelController {
         return ResponseEntity.status(status).body(response);
 
     }
+
+    @PutMapping("/updateHotel/{id}")
+    public ResponseEntity<ApiResponse> updateHotelInfo(HttpServletRequest request, @PathVariable("id") UUID id,@RequestBody HotelUpdateRequest hotelUpdated){
+        String path = request.getMethod() + " " + request.getRequestURI();
+
+        log.info(path);
+
+
+        ApiResponse response = hotelService.updatedHotelInfo(id, hotelUpdated);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(response);
+
+    }
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteHotelById(@PathVariable("id") UUID hotelId, HttpServletRequest request){
