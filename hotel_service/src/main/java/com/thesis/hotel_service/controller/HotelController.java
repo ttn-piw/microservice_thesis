@@ -5,7 +5,6 @@ import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.service.HotelService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +49,21 @@ public class HotelController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse> searchHotels(HttpServletRequest request,
+                                                    @RequestParam(value = "/city", required = false) String city,
+                                                    @RequestParam(value = "/country", required = false) String country,
+                                                    @RequestParam(value = "/minPrice", required = false)Float minPrice,
+                                                    @RequestParam(value = "/maxPrice", required = false) Float maxPrice,
+                                                    @RequestParam(value = "rating_star", required = false) String rating_star){
+        String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
+        log.info("API: -> {}", path);
+
+
+//        ApiResponse response = hotelService.(uuid);
+        return ResponseEntity.status(200).body(null);
+    }
+
     @PostMapping("/createHotel")
     public ResponseEntity<ApiResponse> createNewHotel(HttpServletRequest request, @RequestBody NewHotelRequest newHotel){
         String path = request.getMethod() + " " + request.getRequestURI();
@@ -71,15 +85,12 @@ public class HotelController {
 
         log.info(path);
 
-
         ApiResponse response = hotelService.updatedHotelInfo(id, hotelUpdated);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(status).body(response);
 
     }
-
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteHotelById(@PathVariable("id") UUID hotelId, HttpServletRequest request){
