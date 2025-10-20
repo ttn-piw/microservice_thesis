@@ -160,7 +160,7 @@ public class HotelService {
         return ApiResponse.builder()
                 .code(200)
                 .message("SUCCESSFULLY: UPDATED new hotel's info")
-                .data(null)
+                .data(getHotelUpdated)
                 .build();
     }
 
