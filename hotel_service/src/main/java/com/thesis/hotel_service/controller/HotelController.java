@@ -51,17 +51,16 @@ public class HotelController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> searchHotels(HttpServletRequest request,
-                                                    @RequestParam(value = "/city", required = false) String city,
-                                                    @RequestParam(value = "/country", required = false) String country,
-                                                    @RequestParam(value = "/minPrice", required = false)Float minPrice,
-                                                    @RequestParam(value = "/maxPrice", required = false) Float maxPrice,
-                                                    @RequestParam(value = "rating_star", required = false) String rating_star){
+                                                    @RequestParam( required = false) String city,
+                                                    @RequestParam( required = false) String country,
+                                                    @RequestParam( required = false) String rating_star,
+                                                    @RequestParam(required = false) String keyword){
         String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
         log.info("API: -> {}", path);
 
-
-//        ApiResponse response = hotelService.(uuid);
-        return ResponseEntity.status(200).body(null);
+        ApiResponse response = hotelService.searchHotel(city, country, rating_star, keyword);
+        HttpStatus status = response.getCode() == 82200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
     }
 
     @PostMapping("/createHotel")

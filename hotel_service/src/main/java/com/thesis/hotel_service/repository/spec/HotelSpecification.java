@@ -10,15 +10,6 @@ public class HotelSpecification {
                 city == null ? null : cb.equal(root.get("city"), city);
     }
 
-    public static Specification<Hotel> hasPriceBetween(Double min, Double max) {
-        return (root, query, cb) -> {
-            if (min == null && max == null) return null;
-            if (min == null) return cb.lessThanOrEqualTo(root.get("price"), max);
-            if (max == null) return cb.greaterThanOrEqualTo(root.get("price"), min);
-            return cb.between(root.get("price"), min, max);
-        };
-    }
-
     public static Specification<Hotel> hasRating(Integer rating) {
         return (root, query, cb) ->
                 rating == null ? null : cb.greaterThanOrEqualTo(root.get("rating"), rating);

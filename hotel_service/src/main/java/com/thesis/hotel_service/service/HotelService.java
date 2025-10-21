@@ -6,9 +6,11 @@ import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.repository.HotelRepository;
+import com.thesis.hotel_service.repository.spec.HotelSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -161,6 +163,20 @@ public class HotelService {
                 .code(200)
                 .message("SUCCESSFULLY: UPDATED new hotel's info")
                 .data(getHotelUpdated)
+                .build();
+    }
+
+    public ApiResponse searchHotel(String city, String country, String star, String keyword){
+
+        Specification<Hotel> spec = Specification.<Hotel>unrestricted()
+                .and(HotelSpecification.hasCity(city))
+                .and( star != null && !star.isEmpty() ? HotelSpecification.hasRating(Integer.parseInt(star)) : null)
+                .and(HotelSpecification.nameContains(keyword));
+
+        return ApiResponse.builder()
+                .code(82200)
+                .message("SUCCESSFULLY: DATA FOR SEARCHING")
+                .data(hotelRepository.findAll(spec))
                 .build();
     }
 
