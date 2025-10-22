@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoomTypeByIdResponse {
+public class RoomTypeResponse {
     String name;
     String description;
     Float price_per_night;
