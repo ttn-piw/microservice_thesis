@@ -54,11 +54,13 @@ public class HotelController {
                                                     @RequestParam( required = false) String city,
                                                     @RequestParam( required = false) String country,
                                                     @RequestParam( required = false) String rating_star,
+                                                    @RequestParam(required = false) Double minPrice,
+                                                    @RequestParam(required = false) Double maxPrice,
                                                     @RequestParam(required = false) String keyword){
         String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
         log.info("API: -> {}", path);
 
-        ApiResponse response = hotelService.searchHotel(city, country, rating_star, keyword);
+        ApiResponse response = hotelService.searchHotel(city, country, rating_star, minPrice, maxPrice, keyword);
         HttpStatus status = response.getCode() == 82200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }

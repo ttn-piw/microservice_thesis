@@ -1,10 +1,8 @@
 package com.thesis.hotel_service.service;
 
 import com.thesis.hotel_service.dto.response.ApiResponse;
-import com.thesis.hotel_service.dto.response.RoomIdResponse;
-import com.thesis.hotel_service.dto.response.RoomTypeByIdResponse;
+import com.thesis.hotel_service.dto.response.RoomTypeResponse;
 import com.thesis.hotel_service.mapper.RoomTypeMapper;
-import com.thesis.hotel_service.model.Room;
 import com.thesis.hotel_service.model.Room_type;
 import com.thesis.hotel_service.repository.RoomTypeRepository;
 import org.slf4j.Logger;
@@ -43,7 +41,7 @@ public class RoomTypeService {
                     .build();
         log.info(getRoomTypeById.toString());
 
-        RoomTypeByIdResponse response = roomTypeMapper.toRoomTypeByIdResponse(getRoomTypeById);
+        RoomTypeResponse response = roomTypeMapper.toRoomTypeByIdResponse(getRoomTypeById);
         log.info(response.toString());
 
         return ApiResponse.builder()

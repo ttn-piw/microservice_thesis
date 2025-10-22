@@ -3,6 +3,7 @@ package com.thesis.hotel_service.service;
 import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.dto.response.HotelResponse;
 import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.repository.HotelRepository;
@@ -34,6 +35,10 @@ public class HotelService {
     public ApiResponse getAllHotels(){
         try {
             List<Hotel> hotelList = hotelRepository.findAll();
+//            List<HotelResponse> resposne = hotelList
+//                    .stream()
+//                    .map(hotelMapper::toHotelResponse)
+//                    .toList();
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())
                     .message("SUCCESS: Response data of hotels")
@@ -166,17 +171,24 @@ public class HotelService {
                 .build();
     }
 
-    public ApiResponse searchHotel(String city, String country, String star, String keyword){
-
+    public ApiResponse searchHotel(String city, String country, String star, Double minPrice, Double maxPrice, String keyword){
+        //Filter with specification
         Specification<Hotel> spec = Specification.<Hotel>unrestricted()
                 .and(HotelSpecification.hasCity(city))
                 .and( star != null && !star.isEmpty() ? HotelSpecification.hasRating(Integer.parseInt(star)) : null)
+                .and(HotelSpecification.hasPriceBetween(minPrice,maxPrice))
                 .and(HotelSpecification.nameContains(keyword));
+
+        List<Hotel> search_hotels = hotelRepository.findAll(spec);
+//        List<HotelResponse> response = search_hotels
+//                .stream()
+//                .map(hotelMapper::toHotelResponse)
+//                .toList();
 
         return ApiResponse.builder()
                 .code(82200)
                 .message("SUCCESSFULLY: DATA FOR SEARCHING")
-                .data(hotelRepository.findAll(spec))
+                .data(search_hotels)
                 .build();
     }
 
