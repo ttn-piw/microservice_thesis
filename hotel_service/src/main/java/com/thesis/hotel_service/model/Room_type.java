@@ -1,7 +1,7 @@
 package com.thesis.hotel_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,8 +23,10 @@ public class Room_type {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
-    UUID hotel_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id")
+    @JsonIgnore
+    Hotel hotel;
 
     String name;
     String description;
@@ -37,4 +40,7 @@ public class Room_type {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     OffsetDateTime updated_at;
+
+    @OneToMany(mappedBy = "room_type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Room> rooms;
 }

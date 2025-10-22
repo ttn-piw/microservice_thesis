@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -63,4 +64,7 @@ public class Hotel {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     OffsetDateTime updated_at;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Room_type> roomTypes;
 }

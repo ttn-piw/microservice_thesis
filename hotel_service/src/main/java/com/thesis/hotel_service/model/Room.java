@@ -1,5 +1,6 @@
 package com.thesis.hotel_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -22,8 +23,10 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
-    UUID room_type_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_type_id")
+    @JsonIgnore
+    Room_type room_type;
 
     @NotNull
     UUID hotel_id;
@@ -36,13 +39,4 @@ public class Room {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     OffsetDateTime updated_at;
-
-
-//    id           | uuid                     |           | not null | uuid_generate_v4()
-//    room_type_id | uuid                     |           | not null |
-//    hotel_id     | uuid                     |           | not null |
-//    room_number  | character varying(10)    |           | not null |
-//    status       | room_status              |           | not null | 'available'::room_status
-//    created_at   | timestamp with time zone |           | not null | now()
-//    updated_at   | timestamp with time zone |           | not null | now()
 }
