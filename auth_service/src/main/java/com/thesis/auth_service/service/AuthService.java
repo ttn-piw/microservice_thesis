@@ -87,11 +87,12 @@ public class AuthService {
             //Calling feign
             userClient.createUserFeign(data);
         } catch (Exception e) {
+            log.info("ERROR: {}",e.getMessage());
             authRepository.deleteById(savedNewUser.getId());
 
             return ApiResponse.builder()
                     .code(500)
-                    .message("An error occurred during registration. Please try again.")
+                    .message(String.format("An error occurred during registration. ERROR: %s",e.getMessage()))
                     .data(null)
                     .build();
         }
