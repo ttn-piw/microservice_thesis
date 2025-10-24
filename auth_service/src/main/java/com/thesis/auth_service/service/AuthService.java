@@ -68,6 +68,7 @@ public class AuthService {
             throws JOSEException, ParseException {
 
         var token = request.getToken();
+        log.info("Token: {}", token);
 
         JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
