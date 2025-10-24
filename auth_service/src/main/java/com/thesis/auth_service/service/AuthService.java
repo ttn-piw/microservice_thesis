@@ -2,12 +2,16 @@ package com.thesis.auth_service.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.thesis.auth_service.document.Auth;
+import com.thesis.auth_service.dto.request.IntrospectRequest;
 import com.thesis.auth_service.dto.request.LoginRequest;
 import com.thesis.auth_service.dto.request.RegisterRequest;
 import com.thesis.auth_service.dto.request.UserRequest;
 import com.thesis.auth_service.dto.response.ApiResponse;
+import com.thesis.auth_service.dto.response.IntrospectResponse;
 import com.thesis.auth_service.dto.response.TokenResponse;
 import com.thesis.auth_service.repository.AuthRepository;
 import com.thesis.auth_service.repository.httpClient.UserClient;
@@ -21,8 +25,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
 
@@ -41,6 +47,15 @@ public class AuthService {
     @Value("${jwt.expiration}")
     private long expiration;
 
+//    @NonFinal
+//    @Value("${spring.jwt.valid-duration}")
+//    protected long VALID_DURATION;
+//
+//    @NonFinal
+//    @Value("${spring.jwt.refreshable-duration}")
+//    protected long REFRESHABLE_DURATION;
+
+
     public List<Auth> getAll() {
         return authRepository.findAll();
     }
@@ -48,6 +63,36 @@ public class AuthService {
     Logger log = LoggerFactory.getLogger(AuthService.class);
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+    public IntrospectResponse introspect(@RequestBody IntrospectRequest request)
+            throws JOSEException, ParseException {
+
+        var token = request.getToken();
+
+        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        Date expireTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var verified = signedJWT.verify(jwsVerifier);
+
+        return IntrospectResponse.builder()
+                .valid(verified && expireTime.after(new Date()))
+                .build();
+    }
+
+//    public InstrospectResponse instrospect(InstrospectRequest request){
+//        var token = request.getToken();
+//        boolean isValid = true;
+//
+//        try{
+//            verifyToken(token,false);
+//        } catch(Exception e) {
+//            isValid = false;
+//        }
+//
+//        return InstrospectResponse.builder().valid(isValid).build();
+//    }
+
+
 
     public ApiResponse register (RegisterRequest request){
         if (authRepository.existsByEmail(request.getEmail()))
@@ -137,6 +182,7 @@ public class AuthService {
                 .issuer("trungnguyen_keraunos.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(System.currentTimeMillis() + expiration))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(authInfo))
                 .build();
         //Payload
@@ -152,6 +198,29 @@ public class AuthService {
             throw new RuntimeException(e);
         }
     }
+
+//    private SignedJWT verifyToken(String token, boolean isRefresh) throws
+//            JOSEException, ParseException{
+//        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+//
+//        SignedJWT signedJWT = SignedJWT.parse(token);
+//
+//        Date expiryTime = (isRefresh)
+//                ? new Date(signedJWT
+//                    .getJWTClaimsSet()
+//                    .getIssueTime()
+//                    .toInstant()
+//                    .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+//                    .toEpochMilli())
+//                : signedJWT.getJWTClaimsSet().getExpirationTime();
+//
+//        var verified = signedJWT.verify(verifier);
+//
+//        if (!(verified && expiryTime.after(new Date()))) throw new RuntimeException("UNAUTHENTICATED");
+//
+//        return signedJWT;
+//    }
+
     private String buildScope(Auth auth) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty(auth.getRoles()))
