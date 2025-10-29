@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -43,6 +45,10 @@ public class AuthController {
 
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllAuth(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        log.info("ROLES: {}", authentication.getAuthorities());
+
         if (authService.getAll().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Can not retrieve data");
 

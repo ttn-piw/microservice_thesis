@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,20 +57,19 @@ public class AuthService {
 //    @Value("${spring.jwt.refreshable-duration}")
 //    protected long REFRESHABLE_DURATION;
 
+    Logger log = LoggerFactory.getLogger(AuthService.class);
+
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     public List<Auth> getAll() {
         return authRepository.findAll();
     }
 
-    Logger log = LoggerFactory.getLogger(AuthService.class);
-
-    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
     public IntrospectResponse introspect(@RequestBody IntrospectRequest request)
             throws JOSEException, ParseException {
 
         var token = request.getToken();
-        log.info("Token: {}", token);
+        log.info("Token in auth_service: {}", token);
 
         JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
