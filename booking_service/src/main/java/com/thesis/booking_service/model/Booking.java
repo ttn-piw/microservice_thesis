@@ -1,5 +1,7 @@
 package com.thesis.booking_service.model;
 
+import com.thesis.booking_service.mapper.BookingStatus;
+import com.thesis.booking_service.mapper.PaymentStatusType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
@@ -7,8 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -24,7 +28,8 @@ public class Booking {
     UUID id;
 
     @NotNull
-    UUID user_id;
+    @Column(name = "user_id")
+    UUID userId;
 
     @Email
     String user_email;
@@ -38,22 +43,29 @@ public class Booking {
     @NotBlank
     String hotel_name_snapshot;
 
-    @Column(name = "check_in_date", columnDefinition = "TIME")
-    LocalTime check_in_date;
+    LocalDate check_in_date;
 
-    @Column(name = "check_out_date", columnDefinition = "TIME")
-    LocalTime check_out_date;
+    LocalDate check_out_date;
+//    @Column(name = "check_in_date", columnDefinition = "TIME")
+//    LocalTime check_in_date;
+//
+//    @Column(name = "check_out_date", columnDefinition = "TIME")
+//    LocalTime check_out_date;
 
-    @NotBlank
+    @NotNull
     Double total_price;
 
     String special_requests;
 
-    @NotBlank
-    String status;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status")
+    private BookingStatus status;
 
-    @NotBlank
-    String payment_status;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "payment_status")
+    private PaymentStatusType paymentStatus;
 
     @NotBlank
     String payment_intent_id;
