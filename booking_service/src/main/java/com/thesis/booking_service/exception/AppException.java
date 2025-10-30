@@ -1,4 +1,4 @@
-package com.thesis.auth_service.exception;
+package com.thesis.booking_service.exception;
 
 
 public class AppException extends  RuntimeException{

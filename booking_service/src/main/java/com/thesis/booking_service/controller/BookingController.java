@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -27,6 +28,10 @@ public class BookingController {
 
     @GetMapping("/")
     public ResponseEntity<ApiResponse> getAllBookings(HttpServletRequest request){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        log.info("ROLES: {}", authentication.getAuthorities());
+
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
@@ -45,18 +50,8 @@ public class BookingController {
         return ResponseEntity.status(status).body(response);
     }
 
-    @GetMapping("user/{user_id}")
-    public ResponseEntity<ApiResponse> getBookingByUserId(HttpServletRequest request,@PathVariable("user_id")UUID userId){
-        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
-        log.info(path);
-
-        ApiResponse response = bookingService.getBookingByUserId(userId);
-        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(response);
-    }
-
-    @PutMapping("{id}/cancel")
-//  Check payment_status # Successfully | today < check_in_date
+    //Cancel by admin
+    @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse> cancelBooking(HttpServletRequest request,@PathVariable("id") UUID bookingId){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
@@ -66,5 +61,40 @@ public class BookingController {
         return ResponseEntity.status(status).body(response);
     }
 
+//    --------------------------------------------USER API---------------------------------
+//    POST /bookings
 
+    @GetMapping("/users/{user_id}")
+    public ResponseEntity<ApiResponse> getBookingByUserId(HttpServletRequest request,@PathVariable("user_id")UUID userId){
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+        ApiResponse response = bookingService.getBookingByUserId(userId);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
+
+//    @GetMapping("users/{user_id}/bookings/{booking_id}")
+//    public ResponseEntity<ApiResponse> getBookingDetailByUserId(HttpServletRequest request,
+//                                                                @PathVariable("user_id")UUID userId,
+//                                                                @PathVariable("booking_id")UUID bookingId){
+//        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+//        log.info(path);
+//
+//        ApiResponse response = bookingService.getBookingDetailByUserId(userId, bookingId);
+//        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+//        return ResponseEntity.status(status).body(response);
+//    }
+//
+//    @PutMapping("/users/{user_id}/bookings/{booking_id}/cancel")
+//    public ResponseEntity<ApiResponse> cancelBookingDetailByUser(HttpServletRequest request,
+//                                                                 @PathVariable("user_id") UUID userId,
+//                                                                 @PathVariable("booking_id") UUID bookingId){
+//        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+//        log.info(path);
+//
+//        ApiResponse response = bookingService.cancelBookingDetailByUser(userId,bookingId);
+//        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+//        return ResponseEntity.status(status).body(response);
+//    }
 }
