@@ -1,15 +1,21 @@
 package com.thesis.booking_service.controller;
 
 import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.exception.AppException;
+import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.util.UUID;
 
@@ -64,14 +70,22 @@ public class BookingController {
 //    --------------------------------------------USER API---------------------------------
 //    POST /bookings
 
-    @GetMapping("/users/{user_id}")
-    public ResponseEntity<ApiResponse> getBookingByUserId(HttpServletRequest request,@PathVariable("user_id")UUID userId){
+    @GetMapping("/me/bookings")
+    public ResponseEntity<ApiResponse> getBookingByUserId(HttpServletRequest request){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
-        ApiResponse response = bookingService.getBookingByUserId(userId);
-        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(response);
+        var contextHolder = SecurityContextHolder.getContext().getAuthentication();
+        var email = contextHolder.getName();
+
+        log.info("Email: {}", email);
+        try {
+            ApiResponse response = bookingService.getBookingOfUser(email);
+            HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(response);
+        } catch(AppException e) {
+            return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
+        }
     }
 
 //    @GetMapping("users/{user_id}/bookings/{booking_id}")

@@ -1,6 +1,7 @@
 package com.thesis.booking_service.service;
 
 import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.mapper.BookingStatus;
 import com.thesis.booking_service.mapper.PaymentStatusType;
 import com.thesis.booking_service.model.Booking;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -89,6 +91,21 @@ public class BookingService {
         return ApiResponse.builder()
                 .code(HttpStatus.OK.value())
                 .message(String.format("SUCCESSFULLY: Cancel booking with id: %s ", id))
+                .build();
+    }
+
+    public ApiResponse getBookingOfUser(String email){
+        List<Booking> getBookings = bookingRepository.findByUserEmail(email);
+        if (getBookings.isEmpty())
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format(("Bookings with email: %s not found"),email))
+                    .build();
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("SUCCESSFUL: List of bookings")
+                .data(getBookings)
                 .build();
     }
 }

@@ -32,7 +32,7 @@ public class Booking {
     UUID userId;
 
     @Email
-    String user_email;
+    String userEmail;
 
     @NotBlank
     String user_phone;
