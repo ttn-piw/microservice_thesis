@@ -1,10 +1,19 @@
 package com.thesis.booking_service.service;
 
 import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.dto.response.BookedRoomTypeDTO;
+import com.thesis.booking_service.dto.response.BookingDetailsResponse;
+import com.thesis.booking_service.dto.response.BookingGuestDTO;
 import com.thesis.booking_service.exception.ErrorCode;
+import com.thesis.booking_service.mapper.BookedRoomTypeMapper;
+import com.thesis.booking_service.mapper.BookingGuestMapper;
 import com.thesis.booking_service.mapper.BookingStatus;
 import com.thesis.booking_service.mapper.PaymentStatusType;
+import com.thesis.booking_service.model.BookedRoomType;
 import com.thesis.booking_service.model.Booking;
+import com.thesis.booking_service.model.BookingGuest;
+import com.thesis.booking_service.repository.BookedRoomTypeRepository;
+import com.thesis.booking_service.repository.BookingGuestRepository;
 import com.thesis.booking_service.repository.BookingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +32,18 @@ public class BookingService {
 
     @Autowired
     BookingRepository bookingRepository;
+
+    @Autowired
+    BookedRoomTypeRepository bookedRoomType;
+
+    @Autowired
+    BookingGuestRepository bookingGuest;
+
+    @Autowired
+    BookedRoomTypeMapper bookedRoomTypeMapper;
+
+    @Autowired
+    BookingGuestMapper bookingGuestMapper;
 
     public ApiResponse getAllBookings(){
         return ApiResponse.builder()
@@ -106,6 +128,48 @@ public class BookingService {
                 .code(HttpStatus.OK.value())
                 .message("SUCCESSFUL: List of bookings")
                 .data(getBookings)
+                .build();
+    }
+
+    public ApiResponse getBookingDetailOfUser(String email, UUID id){
+        Booking getBookingInfo = bookingRepository.findBookingByIdAndUserEmail(id,email);
+        if (getBookingInfo == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format(("No bookings found with email: %s not found"),email))
+                    .build();
+
+        List<BookedRoomType> listBookedRoomType = bookedRoomType.findBookedRoomTypeByBookingId(id);
+        List<BookedRoomTypeDTO> roomTypes= listBookedRoomType
+                .stream()
+                .map(bookedRoomTypeMapper::toBookedRoomTypeDTO)
+                .toList();
+
+        List<BookingGuest> listBookingGuests = bookingGuest.findBookingGuestByBookingId(id);
+        List<BookingGuestDTO> guests = listBookingGuests
+                .stream()
+                .map(bookingGuestMapper::toBookingGuestDTO)
+                .toList();
+
+        BookingDetailsResponse response = new BookingDetailsResponse();
+        response.setId(id);
+        response.setStatus(getBookingInfo.getStatus());
+        response.setPaymentStatus(getBookingInfo.getPaymentStatus());
+        response.setCheck_in_date(getBookingInfo.getCheck_in_date());
+        response.setCheck_out_date(getBookingInfo.getCheck_out_date());
+        response.setTotalPrice(getBookingInfo.getTotal_price());
+        response.setSpecial_requests(getBookingInfo.getSpecial_requests());
+        response.setCreated_at(getBookingInfo.getCreated_at());
+        response.setHotel_id(getBookingInfo.getHotel_id());
+        response.setHotel_name_snapshot(getBookingInfo.getHotel_name_snapshot());
+
+        response.setRoomTypes(roomTypes);
+        response.setGuests(guests);
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("SUCCESSFUL: Booking detail")
+                .data(response)
                 .build();
     }
 }

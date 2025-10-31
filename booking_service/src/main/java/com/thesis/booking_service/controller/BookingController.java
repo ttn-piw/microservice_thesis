@@ -71,7 +71,7 @@ public class BookingController {
 //    POST /bookings
 
     @GetMapping("/me/bookings")
-    public ResponseEntity<ApiResponse> getBookingByUserId(HttpServletRequest request){
+    public ResponseEntity<ApiResponse> getBookingsByUser(HttpServletRequest request){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
@@ -88,18 +88,25 @@ public class BookingController {
         }
     }
 
-//    @GetMapping("users/{user_id}/bookings/{booking_id}")
-//    public ResponseEntity<ApiResponse> getBookingDetailByUserId(HttpServletRequest request,
-//                                                                @PathVariable("user_id")UUID userId,
-//                                                                @PathVariable("booking_id")UUID bookingId){
-//        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
-//        log.info(path);
-//
-//        ApiResponse response = bookingService.getBookingDetailByUserId(userId, bookingId);
-//        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-//        return ResponseEntity.status(status).body(response);
-//    }
-//
+    @GetMapping("/me/bookings/{booking_id}")
+    public ResponseEntity<ApiResponse> getBookingDetailByUser(HttpServletRequest request,
+                                                              @PathVariable("booking_id") UUID bookingId){
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+        var contextHolder = SecurityContextHolder.getContext().getAuthentication();
+        var email = contextHolder.getName();
+
+        log.info("Email: {}", email);
+
+        try {
+            ApiResponse response = bookingService.getBookingDetailOfUser(email,bookingId);
+            HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(response);
+        } catch(AppException e) {
+            return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
+        }
+    }
 //    @PutMapping("/users/{user_id}/bookings/{booking_id}/cancel")
 //    public ResponseEntity<ApiResponse> cancelBookingDetailByUser(HttpServletRequest request,
 //                                                                 @PathVariable("user_id") UUID userId,

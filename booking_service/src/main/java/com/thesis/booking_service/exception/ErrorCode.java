@@ -11,6 +11,7 @@ public enum ErrorCode {
     USER_NOT_EXISTED(831005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(831006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(831007, "You do not have permission", HttpStatus.FORBIDDEN),
+    BOOKINGS_NOT_EXISTED(831008, "Bookings not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -8,8 +8,10 @@ import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Booking findBookingById(UUID id);
+    Booking findBookingByIdAndUserEmail(UUID id, String email);
     Boolean existsByUserId(UUID id);
     List<Booking> findByUserId(UUID userId);
     List<Booking> findByUserEmail(String email);
     boolean existsById(UUID id);
+    Boolean existsBookingByUserEmail(String email);
 }
