@@ -146,6 +146,8 @@ public class BookingService {
                 .toList();
 
         List<BookingGuest> listBookingGuests = bookingGuest.findBookingGuestByBookingId(id);
+        log.info("List booking guests: {}", listBookingGuests);
+
         List<BookingGuestDTO> guests = listBookingGuests
                 .stream()
                 .map(bookingGuestMapper::toBookingGuestDTO)
@@ -170,6 +172,41 @@ public class BookingService {
                 .code(HttpStatus.OK.value())
                 .message("SUCCESSFUL: Booking detail")
                 .data(response)
+                .build();
+    }
+
+    public ApiResponse cancelBookingByUser(String email, UUID bookingId){
+        Booking getBookingInfo = bookingRepository.findBookingByIdAndUserEmail(bookingId,email);
+
+
+        LocalDate now = LocalDate.now();
+        log.info("getBookingInfo {}",getBookingInfo.toString());
+
+        if (getBookingInfo == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format("FAIL: Booking with %s not found", bookingId))
+                    .data(null)
+                    .build();
+
+        if (!getBookingInfo.getCheck_in_date().isAfter(now))
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("FAIL: Check_in_date must not be late than today")
+                    .build();
+
+        if (getBookingInfo.getPaymentStatus() == PaymentStatusType.SUCCESSFUL)
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("CANNOT DELETE: Your bookings has been paid SUCCESSFUL!")
+                    .build();
+
+        getBookingInfo.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(getBookingInfo);
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message(String.format("SUCCESSFULLY: Cancel booking with id: %s ", bookingId))
                 .build();
     }
 }

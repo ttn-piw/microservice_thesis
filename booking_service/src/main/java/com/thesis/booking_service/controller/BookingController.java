@@ -66,7 +66,11 @@ public class BookingController {
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }
-
+    //Hotel owner
+    //PATCH /api/v1/bookings/{bookingId}/status
+    //POST /api/v1/bookings/{bookingId}/guests
+    //PUT /api/v1/bookings/{bookingId}/guests/{guestId}
+    //DELETE /api/v1/bookings/{bookingId}/guests/{guestId}
 //    --------------------------------------------USER API---------------------------------
 //    POST /bookings
 
@@ -107,15 +111,24 @@ public class BookingController {
             return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
         }
     }
-//    @PutMapping("/users/{user_id}/bookings/{booking_id}/cancel")
-//    public ResponseEntity<ApiResponse> cancelBookingDetailByUser(HttpServletRequest request,
-//                                                                 @PathVariable("user_id") UUID userId,
-//                                                                 @PathVariable("booking_id") UUID bookingId){
-//        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
-//        log.info(path);
-//
-//        ApiResponse response = bookingService.cancelBookingDetailByUser(userId,bookingId);
-//        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-//        return ResponseEntity.status(status).body(response);
-//    }
+    @PatchMapping("/me/bookings/{booking_id}/cancel")
+    public ResponseEntity<ApiResponse> cancelBookingDetailByUser(HttpServletRequest request,
+                                                                 @PathVariable("booking_id") UUID bookingId){
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+
+        var contextHolder = SecurityContextHolder.getContext().getAuthentication();
+        var email = contextHolder.getName();
+
+        log.info("Email: {}", email);
+
+        try {
+            ApiResponse response = bookingService.cancelBookingByUser(email,bookingId);
+            HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(response);
+        } catch(AppException e) {
+            return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
+        }
+    }
 }

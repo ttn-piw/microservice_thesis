@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingGuestDTO {
-    String fullName;
+    String full_name;
     String email;
-    boolean isPrimary;
+    Boolean is_primary;
 }
