@@ -1,5 +1,6 @@
 package com.thesis.booking_service.service;
 
+import com.thesis.booking_service.dto.request.CreateBookingRequest;
 import com.thesis.booking_service.dto.response.ApiResponse;
 import com.thesis.booking_service.dto.response.BookedRoomTypeDTO;
 import com.thesis.booking_service.dto.response.BookingDetailsResponse;
@@ -15,6 +16,7 @@ import com.thesis.booking_service.model.BookingGuest;
 import com.thesis.booking_service.repository.BookedRoomTypeRepository;
 import com.thesis.booking_service.repository.BookingGuestRepository;
 import com.thesis.booking_service.repository.BookingRepository;
+import com.thesis.booking_service.repository.httpClient.hotelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ public class BookingService {
 
     @Autowired
     BookingGuestMapper bookingGuestMapper;
+
+    @Autowired
+    hotelClient hotelClient;
 
     public ApiResponse getAllBookings(){
         return ApiResponse.builder()
@@ -128,6 +133,31 @@ public class BookingService {
                 .code(HttpStatus.OK.value())
                 .message("SUCCESSFUL: List of bookings")
                 .data(getBookings)
+                .build();
+    }
+
+    public ApiResponse bookingRoom(CreateBookingRequest request){
+        //Response = {
+        //  "hotel_id": "uuid-cua-khach-san",
+        //  "check_in_date": "2025-12-20",
+        //  "check_out_date": "2025-12-25",
+        //  "special_requests": "Phòng tầng cao, không hút thuốc.",
+        //  "guests": [
+        //    { "full_name": "Nguyễn Văn A", "email": "a@gmail.com", "is_primary": true },
+        //    { "full_name": "Trần Thị B", "is_primary": false }
+        //  ],
+        //  "room_types": [
+        //    { "room_type_id": "uuid-cua-loai-phong-1", "quantity": 1 },
+        //    { "room_type_id": "uuid-cua-loai-phong-2", "quantity": 2 }
+        //  ]
+        //}
+        log.info("Booking info: {}",request.toString());
+
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("SUCCESSFUL: New booking created")
+                .data(null)
                 .build();
     }
 

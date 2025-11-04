@@ -1,8 +1,10 @@
 package com.thesis.booking_service.controller;
 
+import com.thesis.booking_service.dto.request.CreateBookingRequest;
 import com.thesis.booking_service.dto.response.ApiResponse;
 import com.thesis.booking_service.exception.AppException;
 import com.thesis.booking_service.exception.ErrorCode;
+import com.thesis.booking_service.repository.httpClient.hotelClient;
 import com.thesis.booking_service.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -25,11 +27,20 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
+    @Autowired
+    hotelClient hotelClient;
+
     Logger log = LoggerFactory.getLogger(BookingController.class);
 
     @GetMapping("/test")
     public String testAPI(){
         return "Booking_service API";
+    }
+
+    @GetMapping("/testFeignHotel")
+    public String testCallingtoHotel(){
+        log.info("Calling to hotel_service");
+        return hotelClient.callHotelService();
     }
 
     @GetMapping("/")
@@ -73,9 +84,9 @@ public class BookingController {
     //DELETE /api/v1/bookings/{bookingId}/guests/{guestId}
 //    --------------------------------------------USER API---------------------------------
 //    POST /bookings
-
-    @GetMapping("/me/bookings")
-    public ResponseEntity<ApiResponse> getBookingsByUser(HttpServletRequest request){
+    @PostMapping("/bookings")
+    public ResponseEntity<ApiResponse> getBookingsByUser(HttpServletRequest request,
+                                                         @RequestBody(required = true)CreateBookingRequest bookingRequest){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
@@ -83,13 +94,9 @@ public class BookingController {
         var email = contextHolder.getName();
 
         log.info("Email: {}", email);
-        try {
-            ApiResponse response = bookingService.getBookingOfUser(email);
+            ApiResponse response = bookingService.bookingRoom(bookingRequest);
             HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
             return ResponseEntity.status(status).body(response);
-        } catch(AppException e) {
-            return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
-        }
     }
 
     @GetMapping("/me/bookings/{booking_id}")
