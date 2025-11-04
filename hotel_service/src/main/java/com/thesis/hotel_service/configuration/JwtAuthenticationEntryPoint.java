@@ -1,8 +1,9 @@
-package com.thesis.booking_service.configuration;
+package com.thesis.hotel_service.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.booking_service.dto.response.ApiResponse;
-import com.thesis.booking_service.exception.ErrorCode;
+import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.exception.ErrorCode;
+import com.thesis.hotel_service.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +17,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException{
-        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+       ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
 
         response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
