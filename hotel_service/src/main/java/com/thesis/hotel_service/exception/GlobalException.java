@@ -1,6 +1,6 @@
-package com.thesis.booking_service.exception;
+package com.thesis.hotel_service.exception;
 
-import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
