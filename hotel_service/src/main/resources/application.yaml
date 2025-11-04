@@ -1,6 +1,10 @@
 server:
   port: 8082
 
+jwt:
+  signerKey: 6g>NnIdgCAQ]D)?J3$x7psIW?QYCW1J4q}Yr^pVjCjuy3#pyCbo/,aa@bFvX_egE
+  expiration: 3600000
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/hotelservice_db
