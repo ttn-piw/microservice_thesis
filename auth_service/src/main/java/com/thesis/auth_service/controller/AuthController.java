@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -97,5 +98,11 @@ public class AuthController {
         return ApiResponse.<IntrospectResponse>builder()
                 .data(data)
                 .build();
+    }
+
+    //    API FOR SENDING BACK DATA TO OTHER SERVICE
+    @GetMapping("/getUserId")
+    public String getUserId(@RequestParam("email") String email){
+        return authService.getUserId(email);
     }
 }
