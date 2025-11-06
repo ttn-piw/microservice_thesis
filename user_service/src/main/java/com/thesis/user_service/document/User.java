@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "user")
 @Data
@@ -17,7 +18,8 @@ public class User {
     @Id
     String id;
 
-    String user_id;
+    @Field("user_id")
+    String userId;
 
     String name;
 

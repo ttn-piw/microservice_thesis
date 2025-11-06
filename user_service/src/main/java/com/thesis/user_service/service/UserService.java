@@ -3,9 +3,10 @@ package com.thesis.user_service.service;
 import com.thesis.user_service.document.User;
 import com.thesis.user_service.dto.request.RegisterRequest;
 import com.thesis.user_service.dto.response.ApiResponse;
+import com.thesis.user_service.dto.response.BookingUserResponse;
 import com.thesis.user_service.dto.response.UserResponseById;
+import com.thesis.user_service.mapper.bookingInfoUserMapper;
 import com.thesis.user_service.repository.UserRepository;
-import lombok.var;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,9 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    bookingInfoUserMapper userMapper;
+
     Logger log = LoggerFactory.getLogger(UserService.class);
 
     public List<User> getAllStudents(){
@@ -34,6 +38,12 @@ public class UserService {
         //DTO user -> UserResponse
         UserResponseById result = new UserResponseById(user.getName(), user.getGender(), user.getPhone(), user.getAvatar(), user.getBirthday().toString());
         return result;
+    }
+
+    public BookingUserResponse getUserByUserId(String userId){
+        User user = userRepository.getUserByUserId(userId);
+        BookingUserResponse response = userMapper.toBookingUserResponse(user);
+        return response;
     }
 
     public ApiResponse registerUser(RegisterRequest request){
@@ -53,7 +63,7 @@ public class UserService {
        new_user.setPhone(request.getPhone());
        new_user.setAvatar(request.getAvatar());
        new_user.setBirthday(request.getBirthday());
-       new_user.setUser_id(request.getUser_id());
+       new_user.setUserId(request.getUser_id());
 
        log.info(new_user.toString());
 

@@ -3,9 +3,9 @@ package com.thesis.user_service.controller;
 import com.thesis.user_service.document.User;
 import com.thesis.user_service.dto.request.RegisterRequest;
 import com.thesis.user_service.dto.response.ApiResponse;
+import com.thesis.user_service.dto.response.BookingUserResponse;
 import com.thesis.user_service.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.var;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -62,6 +63,11 @@ public class UsersController {
         }
     }
 
+    @GetMapping("/getBookingUserResponse")
+    public BookingUserResponse getBookingUserResponse(@RequestParam("userId") String userId){
+        return userService.getUserByUserId(userId);
+    }
+
     @PostMapping("/createUser")
     public ResponseEntity<ApiResponse> registerAccount (HttpServletRequest http,@RequestBody RegisterRequest request){
         String path = http.getMethod() + " " + http.getRequestURI() + (http.getQueryString() != null ? "?" + http.getQueryString() : "") ;
@@ -103,4 +109,5 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+    //    API FOR SENDING BACK DATA TO OTHER SERVICE
 }
