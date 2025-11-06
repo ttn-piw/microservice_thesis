@@ -1,10 +1,7 @@
 package com.thesis.booking_service.service;
 
 import com.thesis.booking_service.dto.request.CreateBookingRequest;
-import com.thesis.booking_service.dto.response.ApiResponse;
-import com.thesis.booking_service.dto.response.BookedRoomTypeDTO;
-import com.thesis.booking_service.dto.response.BookingDetailsResponse;
-import com.thesis.booking_service.dto.response.BookingGuestDTO;
+import com.thesis.booking_service.dto.response.*;
 import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.mapper.BookedRoomTypeMapper;
 import com.thesis.booking_service.mapper.BookingGuestMapper;
@@ -16,7 +13,9 @@ import com.thesis.booking_service.model.BookingGuest;
 import com.thesis.booking_service.repository.BookedRoomTypeRepository;
 import com.thesis.booking_service.repository.BookingGuestRepository;
 import com.thesis.booking_service.repository.BookingRepository;
+import com.thesis.booking_service.repository.httpClient.authClient;
 import com.thesis.booking_service.repository.httpClient.hotelClient;
+import com.thesis.booking_service.repository.httpClient.userClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +48,12 @@ public class BookingService {
 
     @Autowired
     hotelClient hotelClient;
+
+    @Autowired
+    userClient userClient;
+
+    @Autowired
+    authClient authClient;
 
     public ApiResponse getAllBookings(){
         return ApiResponse.builder()
@@ -136,8 +141,8 @@ public class BookingService {
                 .build();
     }
 
-    public ApiResponse bookingRoom(CreateBookingRequest request){
-        //Response = {
+    public ApiResponse bookingRoom(CreateBookingRequest request, String email){
+        //Request = {
         //  "hotel_id": "uuid-cua-khach-san",
         //  "check_in_date": "2025-12-20",
         //  "check_out_date": "2025-12-25",
@@ -151,7 +156,36 @@ public class BookingService {
         //    { "room_type_id": "uuid-cua-loai-phong-2", "quantity": 2 }
         //  ]
         //}
+
+
+//        - userId, userEmail, userPhone  --> user_service
+//                - hotelId, hotelNameSnapshot  --> hotel_service
+//                - checkInDate, checkOutDate --> Param
+//                - totalPrice --> price_per_night(room_types JOIN with hotelId) * (checkOutDate - CheckInDate)
+//                - "PENDING", "PENDING" --> Default
+//                - payment_id (null)
+//                - createAt, UpdateAt  --> LocalDate now()
         log.info("Booking info: {}",request.toString());
+        //GET user_id from auth -> phone
+        String userId = authClient.getUserId(email);
+        BookingUserResponse user = userClient.getBookingUserResponse(userId);
+        log.info("User info: {}",user);
+
+        String phone = user.getPhone();
+
+
+        String userEmail = email;
+
+        UUID hotelId = request.getHotelId();
+        String getHotelName = hotelClient.getHotelName(request.getHotelId());
+
+        LocalDate checkInDate = request.getCheckInDate();
+        LocalDate checkOutDate = request.getCheckOutDate();
+
+        BookingStatus bookingStatus = BookingStatus.CONFIRMED;
+        PaymentStatusType paymentStatus = PaymentStatusType.PENDING;
+
+        OffsetDateTime createAt = OffsetDateTime.now();
 
 
         return ApiResponse.builder()

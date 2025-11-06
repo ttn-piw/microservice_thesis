@@ -1,4 +1,4 @@
-package com.thesis.user_service.dto.response;
+package com.thesis.booking_service.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +18,5 @@ public class BookingUserResponse {
     String gender;
     String phone;
     String avatar;
-    LocalDate birthday;
+    String birthday;
 }

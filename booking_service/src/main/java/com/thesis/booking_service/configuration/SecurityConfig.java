@@ -29,13 +29,17 @@ public class SecurityConfig {
     protected String SIGNER_KEY;
 
     String ADMIN_ENDPOINT[]= {
-            "/api/v1/bookings/",
+//            "/api/v1/bookings/",
             "/api/v1/bookings/{id}",
             "/api/v1/bookings/{id}/cancel"
     };
 
     String PUBLIC_ENDPOINT[]= {
-            "/api/v1/bookings/testFeignHotel"
+            "/api/v1/bookings/bookings",
+            "/api/v1/bookings/testFeignHotel",
+            "/api/v1/bookings/testFeignUser",
+            "/api/v1/bookings/testFeignAuth",
+            "/api/v1/bookings/getBookingUserResponse"
     };
 
     @Bean

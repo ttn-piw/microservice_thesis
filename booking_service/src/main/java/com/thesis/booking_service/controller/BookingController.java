@@ -2,9 +2,12 @@ package com.thesis.booking_service.controller;
 
 import com.thesis.booking_service.dto.request.CreateBookingRequest;
 import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.dto.response.BookingUserResponse;
 import com.thesis.booking_service.exception.AppException;
 import com.thesis.booking_service.exception.ErrorCode;
+import com.thesis.booking_service.repository.httpClient.authClient;
 import com.thesis.booking_service.repository.httpClient.hotelClient;
+import com.thesis.booking_service.repository.httpClient.userClient;
 import com.thesis.booking_service.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -30,6 +33,13 @@ public class BookingController {
     @Autowired
     hotelClient hotelClient;
 
+    @Autowired
+    userClient userClient;
+
+    @Autowired
+    authClient authClient;
+
+
     Logger log = LoggerFactory.getLogger(BookingController.class);
 
     @GetMapping("/test")
@@ -38,10 +48,22 @@ public class BookingController {
     }
 
     @GetMapping("/testFeignHotel")
-    public String testCallingtoHotel(){
+    public String getHotelName(@RequestParam(required = true) UUID hotelId ){
         log.info("Calling to hotel_service");
-        return hotelClient.callHotelService();
+        return hotelClient.getHotelName(hotelId);
     }
+
+    @GetMapping("/testFeignUser")
+    public BookingUserResponse testCallingtoUser(@RequestParam String userId){
+        log.info("Calling to user_service");
+        return userClient.getBookingUserResponse(userId);
+    }
+
+//    @GetMapping("/testFeignAuth")
+//    public String testCallingToAuth(@RequestParam String userId){
+//        log.info("Calling to auth_service");
+//        return authClient.getUserId(userId);
+//    }
 
     @GetMapping("/")
     public ResponseEntity<ApiResponse> getAllBookings(HttpServletRequest request){
@@ -94,9 +116,10 @@ public class BookingController {
         var email = contextHolder.getName();
 
         log.info("Email: {}", email);
-            ApiResponse response = bookingService.bookingRoom(bookingRequest);
-            HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-            return ResponseEntity.status(status).body(response);
+
+        ApiResponse response = bookingService.bookingRoom(bookingRequest, email);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
     }
 
     @GetMapping("/me/bookings/{booking_id}")
