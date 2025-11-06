@@ -102,4 +102,11 @@ public class HotelController {
         ApiResponse response = hotelService.deleteHotelById(hotelId);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+
+//    API FOR SENDING BACK DATA TO OTHER SERVICE
+    @GetMapping("/{hotelId}/getHotelNameSnapshot")
+    public String getHotelSnapshot(@PathVariable("hotelId") UUID hotelId){
+        String hotelNameSnapshot = hotelService.getHotelNameSnapshot(hotelId);
+        return hotelNameSnapshot;
+    }
 }

@@ -207,4 +207,8 @@ public class HotelService {
                 .data(null)
                 .build();
     }
+
+    public String getHotelNameSnapshot(UUID hotelId){
+        return hotelRepository.findHotelById(hotelId).getName();
+    }
 }
