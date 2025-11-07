@@ -109,5 +109,4 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-    //    API FOR SENDING BACK DATA TO OTHER SERVICE
 }

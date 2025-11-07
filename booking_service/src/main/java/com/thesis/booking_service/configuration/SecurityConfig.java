@@ -30,8 +30,7 @@ public class SecurityConfig {
 
     String ADMIN_ENDPOINT[]= {
 //            "/api/v1/bookings/",
-            "/api/v1/bookings/{id}",
-            "/api/v1/bookings/{id}/cancel"
+            "/api/v1/bookings/admin/**"
     };
 
     String PUBLIC_ENDPOINT[]= {
@@ -45,7 +44,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINT).permitAll()
+                .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                 .requestMatchers(HttpMethod.GET,ADMIN_ENDPOINT).hasAuthority("ADMIN")
                 .anyRequest().permitAll());
 

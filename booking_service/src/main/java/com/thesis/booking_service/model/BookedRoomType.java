@@ -1,5 +1,6 @@
 package com.thesis.booking_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -21,8 +22,10 @@ public class BookedRoomType {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @NotNull
-    UUID bookingId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false)
+    @JsonIgnore
+    Booking booking;
 
     @NotNull
     UUID room_type_id;

@@ -90,7 +90,7 @@ public class BookingController {
     }
 
     //Cancel by admin
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/admin/{id}/cancel")
     public ResponseEntity<ApiResponse> cancelBooking(HttpServletRequest request,@PathVariable("id") UUID bookingId){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
