@@ -58,4 +58,8 @@ public class RoomTypeController {
         return ResponseEntity.status(status).body(response);
     }
 
+    @GetMapping("/{uuid}/getPrice")
+    public Double getPriceRoomTypeById(HttpServletRequest request, @PathVariable("uuid")UUID uuid){
+        return roomTypeService.getPriceRoomTypeById(uuid);
+    }
 }
