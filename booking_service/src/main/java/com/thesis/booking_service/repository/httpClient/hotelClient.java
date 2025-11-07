@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
-@FeignClient(name = "hotel-service", url = "http://localhost:8082/api/v1/hotels")
+@FeignClient(name = "hotel-service", url = "http://localhost:8082/api/v1/")
 public interface hotelClient {
-    @GetMapping("/test")
+    @GetMapping("hotels/test")
     String callHotelService();
 
-    @GetMapping("/{hotelId}/getHotelNameSnapshot")
+    @GetMapping("hotels/{hotelId}/getHotelNameSnapshot")
     String getHotelName(@PathVariable("hotelId")UUID hotelId);
+
+    @GetMapping("roomTypes/{id}/getPrice")
+    Double getPrice(@PathVariable("id") UUID id);
 }

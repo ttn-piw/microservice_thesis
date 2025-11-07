@@ -30,7 +30,7 @@ public class Booking {
 
     @NotNull
     @Column(name = "user_id")
-    UUID userId;
+    String userId;
 
     @Email
     String userEmail;

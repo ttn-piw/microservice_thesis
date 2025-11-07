@@ -1,6 +1,8 @@
 package com.thesis.booking_service.service;
 
 import com.thesis.booking_service.dto.request.CreateBookingRequest;
+import com.thesis.booking_service.dto.request.GuestBookingRequest;
+import com.thesis.booking_service.dto.request.RoomTypeBookingRequest;
 import com.thesis.booking_service.dto.response.*;
 import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.mapper.BookedRoomTypeMapper;
@@ -22,8 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,21 +81,21 @@ public class BookingService {
                 .data(bookingRepository.findBookingById(bookingId))
                 .build();
     }
-    public ApiResponse getBookingByUserId(UUID userId) {
-        if (!bookingRepository.existsByUserId(userId)) {
-            return ApiResponse.builder()
-                    .code(HttpStatus.NOT_FOUND.value())
-                    .message(String.format("FAIL: User with %s not found", userId))
-                    .data(null)
-                    .build();
-        }
-
-        return ApiResponse.builder()
-                .code(HttpStatus.OK.value())
-                .message("SUCCESSFUL")
-                .data(bookingRepository.findByUserId(userId))
-                .build();
-    }
+//    public ApiResponse getBookingByUserId(UUID userId) {
+//        if (!bookingRepository.existsByUserId(userId)) {
+//            return ApiResponse.builder()
+//                    .code(HttpStatus.NOT_FOUND.value())
+//                    .message(String.format("FAIL: User with %s not found", userId))
+//                    .data(null)
+//                    .build();
+//        }
+//
+//        return ApiResponse.builder()
+//                .code(HttpStatus.OK.value())
+//                .message("SUCCESSFUL")
+//                .data(bookingRepository.findByUserId(userId))
+//                .build();
+//    }
 
     public ApiResponse cancelBooking(UUID id){
         Booking takeBookingInfo = bookingRepository.findBookingById(id);
@@ -141,58 +145,61 @@ public class BookingService {
                 .build();
     }
 
-    public ApiResponse bookingRoom(CreateBookingRequest request, String email){
-        //Request = {
-        //  "hotel_id": "uuid-cua-khach-san",
-        //  "check_in_date": "2025-12-20",
-        //  "check_out_date": "2025-12-25",
-        //  "special_requests": "Phòng tầng cao, không hút thuốc.",
-        //  "guests": [
-        //    { "full_name": "Nguyễn Văn A", "email": "a@gmail.com", "is_primary": true },
-        //    { "full_name": "Trần Thị B", "is_primary": false }
-        //  ],
-        //  "room_types": [
-        //    { "room_type_id": "uuid-cua-loai-phong-1", "quantity": 1 },
-        //    { "room_type_id": "uuid-cua-loai-phong-2", "quantity": 2 }
-        //  ]
-        //}
+    public ApiResponse bookingRoom(CreateBookingRequest request, String email) {
+        {
+//            "hotelId": "b779b2a1-1afc-4778-a9d8-efd14167577a",
+//                "checkInDate": "2025-12-20",
+//                "checkOutDate": "2025-12-25",
+//                "specialRequests": "Phòng tầng cao, không hút thuốc.",
+//                "guests": [
+//            { "full_name": "Nguyen Van A", "email": "a@gmail.com", "is_primary": true },
+//            { "full_name": "Tran Thi B", "is_primary": false }
+//  ],
+//            "roomTypes": [
+//            { "roomTypeId": "c8e5f84e-2b21-4b18-9d41-525d6a8e8e78", "quantity": 1 },
+//            { "roomTypeId": "f7d9e0c3-1a2b-4c5d-8e6f-7a8b9c0d1e2f", "quantity": 2 }
+//  ]
+//        }
+            Booking booking = new Booking();
+            log.info("Booking request info: {}", request.toString());
 
+            //GET user_id from auth -> phone
+            String userId = authClient.getUserId(email);
+            BookingUserResponse user = userClient.getBookingUserResponse(userId);
+            booking.setUserId(user.getUserId());
+            booking.setUserEmail(email);
+            booking.setUser_phone(user.getPhone());
 
-//        - userId, userEmail, userPhone  --> user_service
-//                - hotelId, hotelNameSnapshot  --> hotel_service
-//                - checkInDate, checkOutDate --> Param
-//                - totalPrice --> price_per_night(room_types JOIN with hotelId) * (checkOutDate - CheckInDate)
-//                - "PENDING", "PENDING" --> Default
-//                - payment_id (null)
-//                - createAt, UpdateAt  --> LocalDate now()
-        log.info("Booking info: {}",request.toString());
-        //GET user_id from auth -> phone
-        String userId = authClient.getUserId(email);
-        BookingUserResponse user = userClient.getBookingUserResponse(userId);
-        log.info("User info: {}",user);
+            String getHotelName = hotelClient.getHotelName(request.getHotelId());
+            booking.setHotel_id(request.getHotelId());
+            booking.setHotel_name_snapshot(getHotelName);
+            booking.setCheck_in_date(request.getCheckInDate());
+            booking.setCheck_out_date(request.getCheckOutDate());
+            booking.setSpecial_requests(request.getSpecialRequests());
+            booking.setStatus(BookingStatus.CONFIRMED);
+            booking.setPaymentStatus(PaymentStatusType.PENDING);
+            booking.setCreated_at(OffsetDateTime.now());
+            booking.setUpdated_at(OffsetDateTime.now());
 
-        String phone = user.getPhone();
+            //Handle total_price without check available room
+            long numberOfNights = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
+            log.info("Number of night: {}", numberOfNights);
+            BigDecimal total_price = BigDecimal.ZERO;
+            for (RoomTypeBookingRequest roomType : request.getRoomTypes()) {
+                BigDecimal roomTotalPrice = BigDecimal.valueOf(hotelClient.getPrice(roomType.getRoomTypeId()))
+                        .multiply(BigDecimal.valueOf(roomType.getQuantity()))
+                        .multiply(BigDecimal.valueOf(numberOfNights));
+                total_price = total_price.add(roomTotalPrice);
+            }
+            booking.setTotal_price(total_price.doubleValue());
+            log.info("Booking: {}", booking);
 
-
-        String userEmail = email;
-
-        UUID hotelId = request.getHotelId();
-        String getHotelName = hotelClient.getHotelName(request.getHotelId());
-
-        LocalDate checkInDate = request.getCheckInDate();
-        LocalDate checkOutDate = request.getCheckOutDate();
-
-        BookingStatus bookingStatus = BookingStatus.CONFIRMED;
-        PaymentStatusType paymentStatus = PaymentStatusType.PENDING;
-
-        OffsetDateTime createAt = OffsetDateTime.now();
-
-
-        return ApiResponse.builder()
-                .code(HttpStatus.OK.value())
-                .message("SUCCESSFUL: New booking created")
-                .data(null)
-                .build();
+            return ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESSFUL: New booking created")
+                    .data(null)
+                    .build();
+        }
     }
 
     public ApiResponse getBookingDetailOfUser(String email, UUID id){
