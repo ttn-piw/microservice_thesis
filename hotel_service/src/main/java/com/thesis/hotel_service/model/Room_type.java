@@ -2,10 +2,7 @@ package com.thesis.hotel_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
@@ -26,11 +23,12 @@ public class Room_type {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     @JsonIgnore
+    @ToString.Exclude
     Hotel hotel;
 
     String name;
     String description;
-    Float price_per_night;
+    Double price_per_night;
     Integer capacity_adults;
     Integer capacity_children;
     Integer total_rooms;
@@ -42,5 +40,6 @@ public class Room_type {
     OffsetDateTime updated_at;
 
     @OneToMany(mappedBy = "room_type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     List<Room> rooms;
 }
