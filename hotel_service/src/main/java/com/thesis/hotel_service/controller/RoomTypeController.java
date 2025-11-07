@@ -45,4 +45,17 @@ public class RoomTypeController {
 
         return ResponseEntity.status(status).body(response);
     }
+
+    @GetMapping("/hotel/{hotelId}")
+    public ResponseEntity<ApiResponse> getRoomTypeByHotelId(HttpServletRequest request,
+                                                            @PathVariable UUID hotelId) {
+
+        log.info("{} {} ", request.getMethod(), request.getRequestURI());
+
+        ApiResponse response = roomTypeService.getRoomTypeByHotelId(hotelId);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(response);
+    }
+
 }

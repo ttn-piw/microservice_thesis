@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -48,6 +49,28 @@ public class RoomTypeService {
                 .code(200)
                 .message("ROOM TYPE DATA")
                 .data(response)
+                .build();
+    }
+
+    public ApiResponse getRoomTypeByHotelId(UUID uuid){
+        List<Room_type> roomTypes = roomTypeRepository.findByHotel_Id(uuid);
+
+        if (roomTypes.isEmpty()) {
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format("ROOM TYPE NOT FOUND with HOTEL ID: %s", uuid))
+                    .data(null)
+                    .build();
+        }
+
+        List<RoomTypeResponse> responseList = roomTypes.stream()
+                .map(roomTypeMapper::toRoomTypeByIdResponse)
+                .toList();
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("ROOM TYPE DATA")
+                .data(responseList)
                 .build();
     }
 }

@@ -4,8 +4,11 @@ import com.thesis.hotel_service.model.Room_type;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface RoomTypeRepository extends JpaRepository<Room_type, UUID>{
     Room_type findRoom_typeById(UUID roomTypeId);
+
+    List<Room_type> findByHotel_Id(UUID hotelId);
 }
