@@ -74,8 +74,7 @@ public class RoomTypeService {
                 .build();
     }
 
-    public Double getPriceRoomTypeById(UUID id){
-        Double price = roomTypeRepository.findRoom_typeById(id).getPrice_per_night();
-        return  price == null ? null : price;
+    public RoomTypeResponse getRoomTypeResponse(UUID id){
+        return roomTypeMapper.toRoomTypeByIdResponse(roomTypeRepository.findRoom_typeById(id));
     }
 }

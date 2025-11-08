@@ -1,6 +1,7 @@
 package com.thesis.hotel_service.controller;
 
 import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.dto.response.RoomTypeResponse;
 import com.thesis.hotel_service.mapper.RoomMapper;
 import com.thesis.hotel_service.service.RoomTypeService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,8 +59,8 @@ public class RoomTypeController {
         return ResponseEntity.status(status).body(response);
     }
 
-    @GetMapping("/{uuid}/getPrice")
-    public Double getPriceRoomTypeById(HttpServletRequest request, @PathVariable("uuid")UUID uuid){
-        return roomTypeService.getPriceRoomTypeById(uuid);
+    @GetMapping("/{uuid}/getRoomTypeInfo")
+    public RoomTypeResponse getPriceRoomTypeResponseById(HttpServletRequest request, @PathVariable("uuid")UUID uuid){
+        return roomTypeService.getRoomTypeResponse(uuid);
     }
 }
