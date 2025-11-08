@@ -1,8 +1,12 @@
 package com.thesis.booking_service.repository;
 
+import com.thesis.booking_service.mapper.BookingStatus;
 import com.thesis.booking_service.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,4 +18,28 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     List<Booking> findByUserEmail(String email);
 //    boolean existsById(UUID id);
 //    Boolean existsBookingByUserEmail(String email);
+    @Query(value =
+            "WITH requested_dates AS (" +
+                    "  SELECT generate_series(:checkInDate\\:\\:date, :checkOutDate\\:\\:date - '1 day'\\:\\:interval, '1 day'\\:\\:interval)\\:\\:date AS day" +
+                    "), " +
+                    "daily_booked AS (" +
+                    "  SELECT " +
+                    "    d.day, " +
+                    "    COALESCE(SUM(brt.quantity), 0) AS booked_count " +
+                    "  FROM requested_dates d " +
+                    "  LEFT JOIN bookings b ON b.check_in_date <= d.day AND b.check_out_date > d.day " +
+                    "  LEFT JOIN booked_room_types brt ON brt.booking_id = b.id " +
+                    "  WHERE (b.id IS NULL OR (brt.room_type_id = :roomTypeId AND b.status::text IN (:statuses))) " +
+                    "  GROUP BY d.day " +
+                    ") " +
+                    "SELECT MAX(booked_count) " +
+                    "FROM daily_booked",
+            nativeQuery = true)
+    Integer findMaxBookedQuantityForRoomTypeInDateRange(
+            @Param("roomTypeId") UUID roomTypeId,
+            @Param("checkInDate") LocalDate checkInDate,
+            @Param("checkOutDate") LocalDate checkOutDate,
+            @Param("statuses") List<String> statuses
+    );
+
 }

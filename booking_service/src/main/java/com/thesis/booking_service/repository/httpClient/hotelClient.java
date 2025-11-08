@@ -1,5 +1,7 @@
 package com.thesis.booking_service.repository.httpClient;
 
+import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.dto.response.RoomTypeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +16,9 @@ public interface hotelClient {
     @GetMapping("hotels/{hotelId}/getHotelNameSnapshot")
     String getHotelName(@PathVariable("hotelId")UUID hotelId);
 
-    @GetMapping("roomTypes/{id}/getPrice")
-    Double getPrice(@PathVariable("id") UUID id);
+    @GetMapping("roomTypes/{id}/getRoomTypeInfo")
+    RoomTypeResponse getRoomTypeResponse(@PathVariable("id") UUID id);
+
+    @GetMapping("roomTypes/{id}")
+    ApiResponse getRoomType(@PathVariable("id") UUID id);
 }

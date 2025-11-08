@@ -1,4 +1,4 @@
-package com.thesis.hotel_service.dto.response;
+package com.thesis.booking_service.dto.response;
 
 import jakarta.persistence.Column;
 import lombok.AccessLevel;

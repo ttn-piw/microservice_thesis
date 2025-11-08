@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -58,6 +59,9 @@ public class BookingService {
 
     @Autowired
     authClient authClient;
+
+    @Autowired
+    RoomAvailableService roomAvailableService;
 
     public ApiResponse getAllBookings(){
         return ApiResponse.builder()
@@ -145,23 +149,10 @@ public class BookingService {
                 .build();
     }
 
+    @Transactional
     public ApiResponse bookingRoom(CreateBookingRequest request, String email) {
-        {
-//            "hotelId": "b779b2a1-1afc-4778-a9d8-efd14167577a",
-//                "checkInDate": "2025-12-20",
-//                "checkOutDate": "2025-12-25",
-//                "specialRequests": "Phòng tầng cao, không hút thuốc.",
-//                "guests": [
-//            { "full_name": "Nguyen Van A", "email": "a@gmail.com", "is_primary": true },
-//            { "full_name": "Tran Thi B", "is_primary": false }
-//  ],
-//            "roomTypes": [
-//            { "roomTypeId": "c8e5f84e-2b21-4b18-9d41-525d6a8e8e78", "quantity": 1 },
-//            { "roomTypeId": "f7d9e0c3-1a2b-4c5d-8e6f-7a8b9c0d1e2f", "quantity": 2 }
-//  ]
-//        }
             Booking booking = new Booking();
-            log.info("Booking request info: {}", request.toString());
+//            log.info("Booking request info: {}", request.toString());
 
             //GET user_id from auth -> phone
             String userId = authClient.getUserId(email);
@@ -185,21 +176,29 @@ public class BookingService {
             long numberOfNights = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
             log.info("Number of night: {}", numberOfNights);
             BigDecimal total_price = BigDecimal.ZERO;
+
             for (RoomTypeBookingRequest roomType : request.getRoomTypes()) {
-                BigDecimal roomTotalPrice = BigDecimal.valueOf(hotelClient.getPrice(roomType.getRoomTypeId()))
+                //Check room available
+                roomAvailableService.checkAvailability(
+                        roomType.getRoomTypeId(),
+                        request.getCheckInDate(),
+                        request.getCheckOutDate(),
+                        roomType.getQuantity()
+                );
+
+                BigDecimal roomTotalPrice = BigDecimal.valueOf(hotelClient.getRoomTypeResponse(roomType.getRoomTypeId()).getPrice_per_night())
                         .multiply(BigDecimal.valueOf(roomType.getQuantity()))
                         .multiply(BigDecimal.valueOf(numberOfNights));
                 total_price = total_price.add(roomTotalPrice);
             }
             booking.setTotal_price(total_price.doubleValue());
-            log.info("Booking: {}", booking);
+//            log.info("Booking: {}", booking);
 
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())
                     .message("SUCCESSFUL: New booking created")
                     .data(null)
                     .build();
-        }
     }
 
     public ApiResponse getBookingDetailOfUser(String email, UUID id){

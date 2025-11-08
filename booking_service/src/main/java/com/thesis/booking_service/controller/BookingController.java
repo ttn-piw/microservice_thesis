@@ -3,12 +3,14 @@ package com.thesis.booking_service.controller;
 import com.thesis.booking_service.dto.request.CreateBookingRequest;
 import com.thesis.booking_service.dto.response.ApiResponse;
 import com.thesis.booking_service.dto.response.BookingUserResponse;
+import com.thesis.booking_service.dto.response.RoomTypeResponse;
 import com.thesis.booking_service.exception.AppException;
 import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.repository.httpClient.authClient;
 import com.thesis.booking_service.repository.httpClient.hotelClient;
 import com.thesis.booking_service.repository.httpClient.userClient;
 import com.thesis.booking_service.service.BookingService;
+import com.thesis.booking_service.service.RoomAvailableService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,8 @@ public class BookingController {
     @Autowired
     authClient authClient;
 
+    @Autowired
+    RoomAvailableService roomAvailableService;
 
     Logger log = LoggerFactory.getLogger(BookingController.class);
 
@@ -52,6 +56,17 @@ public class BookingController {
         log.info("Calling to hotel_service");
         return hotelClient.getHotelName(hotelId);
     }
+
+    @GetMapping("/testFeignRoomType/{id}")
+    public ApiResponse getRoomType(@PathVariable("id") UUID uuid){
+        log.info("Calling to hotel_service");
+        return hotelClient.getRoomType(uuid);
+    }
+
+//    @GetMapping("/testFeignRoomTypeResponse/{id}")
+//    public void getRoomTypeResponse(@PathVariable("id") UUID uuid){
+//        roomAvailableService.checkAvailability(uuid);
+//    }
 
     @GetMapping("/testFeignUser")
     public BookingUserResponse testCallingtoUser(@RequestParam String userId){
