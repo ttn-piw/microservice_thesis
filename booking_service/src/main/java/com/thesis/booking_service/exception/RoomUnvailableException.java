@@ -1,4 +1,11 @@
 package com.thesis.booking_service.exception;
 
-public class RoomUnvailableException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class RoomUnvailableException extends RuntimeException{
+    public RoomUnvailableException(String message){
+        super(message);
+    }
 }

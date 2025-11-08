@@ -29,4 +29,14 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(RoomUnvailableException.class)
+    public ResponseEntity<ApiResponse> handleRoomUnavailable(RoomUnvailableException e) {
+        ApiResponse response = ApiResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
