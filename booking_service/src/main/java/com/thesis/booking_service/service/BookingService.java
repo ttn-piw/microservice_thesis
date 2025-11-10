@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -172,9 +173,15 @@ public class BookingService {
             booking.setCreated_at(OffsetDateTime.now());
             booking.setUpdated_at(OffsetDateTime.now());
 
+            List<BookedRoomType> bookedRoomTypeList = new ArrayList<>();
+            List<BookingGuest> bookingGuestList = new ArrayList<>();
+
+            booking.setBookedRoomTypes(bookedRoomTypeList);
+            booking.setBookingGuests(bookingGuestList);
+
             //Handle total_price without check available room
             long numberOfNights = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
-            log.info("Number of night: {}", numberOfNights);
+//            log.info("Number of night: {}", numberOfNights);
             BigDecimal total_price = BigDecimal.ZERO;
 
             for (RoomTypeBookingRequest roomType : request.getRoomTypes()) {
@@ -186,13 +193,39 @@ public class BookingService {
                         roomType.getQuantity()
                 );
 
-                BigDecimal roomTotalPrice = BigDecimal.valueOf(hotelClient.getRoomTypeResponse(roomType.getRoomTypeId()).getPrice_per_night())
+                RoomTypeResponse roomInfo = hotelClient.getRoomTypeResponse(roomType.getRoomTypeId());
+
+                BigDecimal roomTotalPrice = BigDecimal.valueOf(roomInfo.getPrice_per_night())
                         .multiply(BigDecimal.valueOf(roomType.getQuantity()))
                         .multiply(BigDecimal.valueOf(numberOfNights));
                 total_price = total_price.add(roomTotalPrice);
+
+                BookedRoomType newBookedRoomType = new BookedRoomType();
+                newBookedRoomType.setRoom_type_id(roomType.getRoomTypeId());
+                newBookedRoomType.setRoom_type_name_snapshot(roomInfo.getName());
+                newBookedRoomType.setQuantity(roomType.getQuantity());
+                newBookedRoomType.setPrice_per_night_snapshot(roomInfo.getPrice_per_night());
+                newBookedRoomType.setBooking(booking);
+
+                bookedRoomTypeList.add(newBookedRoomType);
             }
+
+            for (GuestBookingRequest guest : request.getGuests()){
+                BookingGuest newBookingGuest = new BookingGuest();
+                newBookingGuest.setBooking(booking);
+                newBookingGuest.setFull_name(guest.getFull_name());
+                newBookingGuest.setEmail(guest.getEmail());
+                newBookingGuest.setIs_primary(guest.getIs_primary());
+
+                bookingGuestList.add(newBookingGuest);
+            }
+
             booking.setTotal_price(total_price.doubleValue());
+            String payment_intent_id = "pi" + "_" + userId.toString() + request.getCheckInDate() + request.getCheckOutDate();
+            booking.setPayment_intent_id(payment_intent_id);
+
 //            log.info("Booking: {}", booking);
+            bookingRepository.save(booking);
 
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())

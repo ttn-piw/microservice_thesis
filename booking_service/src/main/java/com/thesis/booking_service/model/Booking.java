@@ -4,10 +4,7 @@ import com.thesis.booking_service.mapper.BookingStatus;
 import com.thesis.booking_service.mapper.PaymentStatusType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -79,9 +76,11 @@ public class Booking {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     OffsetDateTime updated_at;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingGuest> bookingGuests;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookedRoomType> bookedRoomTypes;
 }

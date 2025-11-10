@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
 public class RoomTypeResponse {
     String name;
     String description;
-    Float price_per_night;
+    Double price_per_night;
     Integer capacity_adults;
     Integer capacity_children;
     Integer total_rooms;
