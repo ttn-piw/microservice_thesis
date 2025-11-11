@@ -38,7 +38,8 @@ public class SecurityConfig {
             "/api/v1/bookings/testFeignHotel",
             "/api/v1/bookings/testFeignUser",
             "/api/v1/bookings/testFeignAuth",
-            "/api/v1/bookings/getBookingUserResponse"
+            "/api/v1/bookings/getBookingUserResponse",
+            "/api/v1/bookings/me/**"
     };
 
     @Bean
