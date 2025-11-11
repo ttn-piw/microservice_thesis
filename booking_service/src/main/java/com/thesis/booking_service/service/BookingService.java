@@ -152,6 +152,19 @@ public class BookingService {
 
     @Transactional
     public ApiResponse bookingRoom(CreateBookingRequest request, String email) {
+            LocalDate now = LocalDate.now();
+            if (request.getCheckInDate().isBefore(now))
+                return ApiResponse.builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Check in date must be after today!")
+                        .build();
+
+            if (request.getCheckInDate().isAfter(request.getCheckOutDate()))
+                return ApiResponse.builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Check out must after check in!")
+                        .build();
+
             Booking booking = new Booking();
 //            log.info("Booking request info: {}", request.toString());
 
