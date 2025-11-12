@@ -48,7 +48,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         //Get token from auth header
         if (CollectionUtils.isEmpty(authHeader))
-            return unauthenticated(exchange.getResponse());
+//            return unauthenticated(exchange.getResponse());
+            return chain.filter(exchange);
 
         String token = exchange.getRequest()
                 .getHeaders()

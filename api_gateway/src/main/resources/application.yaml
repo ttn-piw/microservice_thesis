@@ -23,7 +23,14 @@ spring:
               predicates:
                 - Path=${app.api-prefix}/auth/**
 
+            - id: hotel-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=${app.api-prefix}/hotels/**
+
             - id: booking-service
               uri: http://localhost:8083
               predicates:
                 - Path=${app.api-prefix}/bookings/**
+
+
