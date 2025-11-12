@@ -3,6 +3,7 @@ package com.thesis.hotel_service.service;
 import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.dto.response.HotelMainPageResponse;
 import com.thesis.hotel_service.dto.response.HotelResponse;
 import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
@@ -11,6 +12,8 @@ import com.thesis.hotel_service.repository.spec.HotelSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,29 @@ public class HotelService {
     HotelMapper hotelMapper;
 
     Logger log = LoggerFactory.getLogger(HotelService.class);
+
+    public ApiResponse getAllHotelsMainPage(){
+        Pageable limit = PageRequest.of(0, 6);
+        try {
+            List<Hotel> hotelList = hotelRepository.findAll(limit).getContent();
+            List<HotelMainPageResponse> response = hotelList
+                    .stream()
+                    .map(hotelMapper::toHotelMainPage)
+                    .toList();
+
+            return ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESS: Response data of hotels")
+                    .data(response)
+                    .build();
+        } catch(Exception e){
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+    }
 
     public ApiResponse getAllHotels(){
         try {

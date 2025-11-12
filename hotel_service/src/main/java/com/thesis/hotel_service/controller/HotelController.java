@@ -28,6 +28,18 @@ public class HotelController {
     }
 
     @GetMapping("/")
+    public ResponseEntity<ApiResponse> getHotelMainPage(HttpServletRequest request){
+        String path = request.getMethod() + " " + request.getRequestURI();
+
+        log.info(path);
+
+        ApiResponse response = hotelService.getAllHotelsMainPage();
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @GetMapping("/getAll")
     public ResponseEntity<ApiResponse> getAllHotels(HttpServletRequest request){
         String path = request.getMethod() + " " + request.getRequestURI();
 

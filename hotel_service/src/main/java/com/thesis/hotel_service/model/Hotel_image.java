@@ -18,13 +18,13 @@ public class Hotel_image {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "hotel_id")
-//    @JsonIgnore
-//    @ToString.Exclude
-//    Hotel hotel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id")
+    @JsonIgnore
+    @ToString.Exclude
+    Hotel hotel;
 
-    UUID hotelId;
+//    UUID hotelId;
 
     @Column(name = "image_url")
     String imageUrl;
