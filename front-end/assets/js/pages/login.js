@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 responseMessageEl.textContent = 'Login successful! Redirecting...';
                 responseMessageEl.classList.add('text-success');
 
-                window.location.href = '/index.html'; 
+                window.location.href = 'main-page.html'; 
             } else {
                 throw new Error(apiResponse.message || 'Login response did not contain a token.');
             }

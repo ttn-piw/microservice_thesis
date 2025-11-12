@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main_page.css" />
+    <title>Main page</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav__logo">TNEcoHotel</div>
+        <ul class="nav__links">
+            <li class="link"><a href="http://localhost:8080/hotels/home">Home</a></li>
+            <li class="link"><a href="#">Hotel</a></li>
+            <li class="link"><a href="#">About Us</a></li>
+            <li class="link">
+                <a th:text="${userEmail != null ? userEmail : 'Account'}">Account</a>
+                <ul class="dropdown_menu">
+                    <li><a href="http://localhost:8080/persons/update">Information</a></li>
+                    <li><a href="http://localhost:8080/wishlist/wishlistPage">Wishlist</a></li>
+                    <li><a href="http://localhost:8080/bookings/bookedRoom">Booked</a></li>
+                    <li><a href="http://localhost:8080/users/logout">Log out</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <header class="section__container header__container">
+        <div class="header__image__container">
+            <div class="header__content">
+                <h1>Enjoy Your Dream Vacation</h1>
+                <p>Book Hotels, Flights and stay packages at lowest price.</p>
+            </div>
+            <div class="booking__container">
+                <form id="searchForm">
+                    <div class="form__group" id="txtLocation">
+                        <div class="input__group">
+                            <input type="text" id="locationInput" required />
+                        </div>
+                        <p>Where are you going?</p>
+                    </div>
+                    <div class="form__group">
+                        <div class="input__group">
+                            <input type="date" id="checkInInput" />
+                        </div>
+                        <p>Add date</p>
+                    </div>
+                    <div class="form__group">
+                        <div class="input__group">
+                            <input type="date" id="checkOutInput" />
+                        </div>
+                        <p>Add date</p>
+                    </div>
+                </form>
+                <button type="submit" class="btn" form="searchForm"><i class="ri-search-line"></i> Search</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="section__container popular__container">
+        <h2 class="section__header">Popular Hotels</h2>
+        <div class="popular__grid" id="popularHotelsGrid">
+        </div>
+    </section>
+
+    <section class="client">
+        <div class="section__container client__container">
+            <h2 class="section__header">What our clients say!</h2>
+            <div class="client__grid" id="client-grid">
+            </div>
+        </div>
+    </section>
+
+    <section class="service" id="service">
+        <div class="section__container service__container">
+            <div class="service__content">
+                <p class="section__subheader">SERVICES</p>
+                <h2 class="section__header">Strive Only For The Best.</h2>
+                <ul class="service__list">
+                    <li>
+                        <span><i class="ri-shield-star-line"></i></span>
+                        High Class Security
+                    </li>
+                    <li>
+                        <span><i class="ri-24-hours-line"></i></span>
+                        24 Hours Room Service
+                    </li>
+                    <li>
+                        <span><i class="ri-headphone-line"></i></span>
+                        Conference Room
+                    </li>
+                    <li>
+                        <span><i class="ri-map-2-line"></i></span>
+                        Tourist Guide Support
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section__container">
+        <div class="reward__container">
+            <p>100+ discount codes</p>
+            <h4>Join and discover amazing discounts on your booking</h4>
+            <button id="btnHomeSignUp" class="reward__btn">Join Now!</button>
+        </div>
+    </section>
+
+    <section class="map__container">
+        <div id="map" class="map"></div>
+    </section>
+
+    <footer class="footer">
+        <div class="section__container footer__container">
+            <div class="footer__col">
+                <h3>TNEcoHotel</h3>
+                <p>
+                    TNEcoHotel is a premier hotel booking platform designed for both apps and websites, offering a
+                    seamless and convenient
+                    way to search and book accommodations worldwide.
+                <p>
+                    With an intuitive interface and an extensive selection of hotels, TNEcoHotel strives to provide a
+                    hassle-free experience
+                    for travelers in search of the ideal stay.
+                </p>
+            </div>
+            <div class="footer__col">
+                <h4>Company</h4>
+                <p>About Us</p>
+                <p>Our Team</p>
+                <p>Blog</p>
+                <p>Book</p>
+                <p>Contact Us</p>
+            </div>
+            <div class="footer__col">
+                <h4>Legal</h4>
+                <p>FAQs</p>
+                <p>Terms & Conditions</p>
+                <p>Privacy Policy</p>
+            </div>
+            <div class="footer__col">
+                <h4>Resources</h4>
+                <p>Social Media</p>
+                <p>Help Center</p>
+                <p>Partnerships</p>
+            </div>
+        </div>
+        <div class="footer__bar">
+            Copyright © 2023 Web Design Mastery. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async
+        defer></script>
+
+    <!-- <script src="/assets/js/api/hotelService.js"></script> -->
+    <script script type="module" src="/assets/js/pages/main_page.js"></script>
+</body>
+
+</html>
