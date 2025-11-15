@@ -1,5 +1,9 @@
 import { getHotelMainPage } from '../api/hotelService.js';
 
+const API_GATEWAY_URL = 'http://localhost:8888';
+const IMAGE_BASE_URL = `${API_GATEWAY_URL}/uploads/`;
+const DEFAULT_IMAGE_URL = "../assets/images/default-placeholder.jpg";
+
 function initMap() {
     const location = { lat: 10.030009, lng: 105.7699716 }; 
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -36,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const signUpButton = document.getElementById('btnHomeSignUp');
     if (signUpButton) {
         signUpButton.addEventListener('click', function () {
-            window.location.href = '/registerPage.html';
+            window.location.href = '/pages/register.html';
         });
     }
 
@@ -62,13 +66,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         const address = hotel.address_line;
                         const star = hotel.star_rating;
                     
-                        let imageUrl = "/images/default-placeholder.jpg"; 
+                        let imageUrl = DEFAULT_IMAGE_URL;
                         if (hotel.hotelImages && hotel.hotelImages.length > 0) {
                             const thumbnail = hotel.hotelImages.find(img => img.isThumbnail);
+                           let imageFileName = ""; 
+                            
                             if (thumbnail) {
-                                imageUrl = `/images/${thumbnail.imageUrl}`;
+                                imageFileName = thumbnail.imageUrl;
                             } else {
-                                imageUrl = `/images/${hotel.hotelImages[0].imageUrl}`; 
+                                imageFileName = hotel.hotelImages[0].imageUrl;
+                            }
+                            console.log("Image url before API Gateway:", imageFileName);
+
+                            if (imageFileName) {
+                                imageUrl = `${IMAGE_BASE_URL}${imageFileName}`;
+                                console.log("Image url after API Gateway:", imageUrl);
                             }
                         }
                 
@@ -103,8 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.querySelectorAll('.hotel-image').forEach(img => {
                         img.addEventListener('click', (event) => {
                             const hotelId = event.target.dataset.id;
+                            console.log("Navigating to hotel detail with ID:", hotelId);
                             if (hotelId && hotelId !== "undefined" && hotelId !== "null") {
-                                window.location.href = `hotel_detail.html?id=${hotelId}`;
+                                window.location.href = `hotel-details.html?hotel_id=${hotelId}`;
                             } else {
                                 console.error('Không tìm thấy Hotel ID để điều hướng.');
                             }

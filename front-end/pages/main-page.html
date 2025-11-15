@@ -153,9 +153,20 @@
         </div>
     </footer>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async
-        defer></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries"></script>\
+<script>
+     function initMap() {
+            const location = { lat: 10.030009, lng: 105.7699716 };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+            });
+            new google.maps.Marker({
+                position: location,
+                map: map,
+            });
+        }
+</script>
     <!-- <script src="/assets/js/api/hotelService.js"></script> -->
     <script script type="module" src="/assets/js/pages/main_page.js"></script>
 </body>

@@ -137,7 +137,7 @@ nav {
     background-image: linear-gradient(to right,
             rgba(44, 56, 85, 0.9),
             rgba(100, 125, 187, 0.1)),
-        url("/images/assets/header2.jpg");
+        url("../images/assets/header2.jpg");
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -312,7 +312,7 @@ nav {
 }
 
 .service {
-    background-image: url("/images/assets/service.jpg");
+    background-image: url("../images/assets/service.jpg");
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
