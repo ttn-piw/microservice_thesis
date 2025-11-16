@@ -1,4 +1,5 @@
 const HOTEL_API_URL = 'http://localhost:8888/api/v1/hotels';
+const HOTEL_API_URL_TEST = 'http://localhost:8082/api/v1/hotels';
 
 //Return promise containing ApiResponse object
 export const getHotelMainPage = async () => {
@@ -27,6 +28,38 @@ export const getHotelById = async (uuid) => {
 
     if (!response.ok) {
         throw new Error(apiResponse.message || 'Failed to fetch hotel by ID');
+    }
+    return apiResponse;
+};
+
+export const searchHomePage = async (searchData) => {
+    const params = new URLSearchParams();
+
+    if (!searchData.checkIn || !searchData.bookedRoom) {
+        throw new Error("Check-in date and room count are required.");
+    }
+
+    if (searchData.city) {
+        params.append('city', searchData.city);
+    }
+    params.append('checkIn', searchData.checkIn); 
+    
+    if (searchData.checkOut) {
+        params.append('checkOut', searchData.checkOut);
+    }
+    params.append('bookedRoom', searchData.bookedRoom); 
+
+    const response = await fetch(`${HOTEL_API_URL}/homeSearch`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString()
+    });
+
+    const apiResponse = await response.json();
+    if (!response.ok) {
+        throw new Error(apiResponse.message || 'Search failed');
     }
     return apiResponse;
 };
