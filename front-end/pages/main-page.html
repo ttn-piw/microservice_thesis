@@ -14,15 +14,15 @@
     <nav>
         <div class="nav__logo">TNEcoHotel</div>
         <ul class="nav__links">
-            <li class="link"><a href="http://localhost:8080/hotels/home">Home</a></li>
+            <li class="link"><a href="http://127.0.0.1:5500/pages/main-page.html">Home</a></li>
             <li class="link"><a href="#">Hotel</a></li>
             <li class="link"><a href="#">About Us</a></li>
             <li class="link">
                 <a th:text="${userEmail != null ? userEmail : 'Account'}">Account</a>
                 <ul class="dropdown_menu">
                     <li><a href="http://localhost:8080/persons/update">Information</a></li>
-                    <li><a href="http://localhost:8080/wishlist/wishlistPage">Wishlist</a></li>
                     <li><a href="http://localhost:8080/bookings/bookedRoom">Booked</a></li>
+                    <li><a href="http://localhost:8888/api/v1/hotels/myHotel">My hotels</a></li>
                     <li><a href="http://localhost:8080/users/logout">Log out</a></li>
                 </ul>
             </li>
@@ -54,10 +54,14 @@
                         </div>
                         <p>Add date</p>
                     </div>
+                    <div class="form__group">
+                        <div class="input__group">
+                            <input type="number" id="roomCountInput" min="1" value="1" required />
+                        </div>
+                        <p>Number of rooms</p>
+                    </div>
                 </form>
-                <button type="submit" class="btn" form="searchForm"><i class="ri-search-line"></i> Search</button>
-            </div>
-        </div>
+                <button type="submit" class="btn" form="searchForm"><i class="ri-search-line"></i></button>
     </header>
 
     <section class="section__container popular__container">

@@ -19,23 +19,26 @@ function initMap() {
 window.initMap = initMap;
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const searchButton = document.querySelector('.btn');
     const searchForm = document.getElementById('searchForm');
     
-    if (searchButton && searchForm) {
-        searchButton.addEventListener('click', (e) => {
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
             e.preventDefault(); 
-            
-            const location = document.getElementById('locationInput').value.trim();
-            if (!location) {
-                alert('Please enter a location.');
-                return;
-            }
-            sessionStorage.setItem('sessionLocation', location);
-            window.location.href = '/hotels/search';
+
+            const location = document.getElementById('locationInput').value;
+            const checkIn = document.getElementById('checkInInput').value;
+            const checkOut = document.getElementById('checkOutInput').value;
+            const rooms = document.getElementById('roomCountInput').value;
+
+            const queryParams = new URLSearchParams();
+            if (location) queryParams.set('location', location);
+            if (checkIn) queryParams.set('checkIn', checkIn);
+            if (checkOut) queryParams.set('checkOut', checkOut);
+            if (rooms) queryParams.set('rooms', rooms);
+            window.location.href = `search.html?${queryParams.toString()}`;
         });
-    }
+    }      
 
     const signUpButton = document.getElementById('btnHomeSignUp');
     if (signUpButton) {
