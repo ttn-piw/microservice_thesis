@@ -3,6 +3,7 @@ package com.thesis.hotel_service.controller;
 import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
+import com.thesis.hotel_service.repository.httpClient.bookingClient;
 import com.thesis.hotel_service.service.HotelService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +24,17 @@ public class HotelController {
     @Autowired
     HotelService hotelService;
 
+    @Autowired
+    bookingClient bookingClient;
+
     Logger log = LoggerFactory.getLogger(HotelController.class);
+
+    @GetMapping("/bookedRoom")
+    Map<UUID, Integer> getBookedRoom(@RequestParam(required = true) UUID hotelId,
+                                  @RequestParam(required = true) LocalDate checkIn,
+                                  @RequestParam(required = true) LocalDate checkOut){
+        return bookingClient.getBookedRoomCounts(hotelId,checkIn,checkOut);
+    }
 
     @GetMapping("/test")
     String testHotel(){
@@ -59,6 +73,34 @@ public class HotelController {
 
         ApiResponse response = hotelService.getHotelById(uuid);
         return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/homeSearch")
+    public ResponseEntity<ApiResponse> searchHomePage(HttpServletRequest request,
+                                                    @RequestParam( required = false) String city,
+                                                    @RequestParam(required = true) LocalDate checkIn,
+                                                    @RequestParam(required = false) LocalDate checkOut,
+                                                    @RequestParam(required = true)  Integer bookedRoom){
+        String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
+        log.info("API: -> {}", path);
+
+        ApiResponse response = hotelService.searchHomePage(city, checkIn, checkOut, bookedRoom);
+        HttpStatus status = response.getCode() == 82200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<ApiResponse> getAvailableRoom(
+            HttpServletRequest request,
+            @RequestParam(required = true) UUID hotelId,
+            @RequestParam(required = true) LocalDate checkIn,
+            @RequestParam(required = true) LocalDate checkOut){
+        String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
+        log.info("API: -> {}", path);
+
+        ApiResponse response = hotelService.getAvailability(hotelId,checkIn,checkOut);
+        HttpStatus status = response.getCode() == 82200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
     }
 
     @GetMapping("/search")

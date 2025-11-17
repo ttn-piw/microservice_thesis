@@ -29,9 +29,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -324,5 +323,20 @@ public class BookingService {
                 .code(HttpStatus.OK.value())
                 .message(String.format("SUCCESSFULLY: Cancel booking with id: %s ", bookingId))
                 .build();
+    }
+
+
+//    INTERNAL METHOD
+    public Map<UUID,Integer> getNumberBookedRoom(UUID hotelId, LocalDate checkIn, LocalDate checkOut){
+        List<BookedCountResponse> result;
+
+        String status = BookingStatus.CONFIRMED.name();
+        result = bookingRepository.findBookedRoomCountsNative(hotelId,status,checkIn,checkOut);
+
+        return result.stream()
+                .collect(Collectors.toMap(
+                        BookedCountResponse::getRoomTypeId,
+                        BookedCountResponse::getBookedCount
+                ));
     }
 }

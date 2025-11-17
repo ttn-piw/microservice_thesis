@@ -20,6 +20,8 @@ public interface HotelMapper {
     HotelResponse toHotelResponse(Hotel hotel);
 
    HotelMainPageResponse toHotelMainPage(Hotel hotels);
+
+   List<HotelMainPageResponse> toHotelMainPageResponse(List<Hotel> hotels);
 }
 
 

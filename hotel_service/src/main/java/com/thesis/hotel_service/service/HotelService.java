@@ -5,9 +5,14 @@ import com.thesis.hotel_service.dto.request.NewHotelRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.dto.response.HotelMainPageResponse;
 import com.thesis.hotel_service.dto.response.HotelResponse;
+import com.thesis.hotel_service.dto.response.RoomAvailabilityResponse;
 import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
+import com.thesis.hotel_service.model.Room_type;
 import com.thesis.hotel_service.repository.HotelRepository;
+import com.thesis.hotel_service.repository.RoomRepository;
+import com.thesis.hotel_service.repository.RoomTypeRepository;
+import com.thesis.hotel_service.repository.httpClient.bookingClient;
 import com.thesis.hotel_service.repository.spec.HotelSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +23,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HotelService {
@@ -33,7 +41,14 @@ public class HotelService {
     @Autowired
     HotelMapper hotelMapper;
 
+    @Autowired
+    bookingClient bookingClient;
+
     Logger log = LoggerFactory.getLogger(HotelService.class);
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
 
     public ApiResponse getAllHotelsMainPage(){
         Pageable limit = PageRequest.of(0, 6);
@@ -218,6 +233,19 @@ public class HotelService {
                 .build();
     }
 
+    public ApiResponse searchHomePage(String city, LocalDate checkIn, LocalDate checkOut, Integer bookingRoom){
+        Specification<Hotel> spec = Specification.<Hotel>unrestricted()
+                .and(HotelSpecification.hasCity(city));
+
+        List<HotelMainPageResponse> search_hotels = hotelMapper.toHotelMainPageResponse(hotelRepository.findAll(spec));
+
+        return ApiResponse.builder()
+                .code(82200)
+                .message("SUCCESSFULLY: DATA FOR SEARCHING")
+                .data(search_hotels)
+                .build();
+    }
+
     public ApiResponse deleteHotelById(UUID uuid){
         if (hotelRepository.findHotelById(uuid) == null)
             return ApiResponse.builder()
@@ -236,5 +264,42 @@ public class HotelService {
 
     public String getHotelNameSnapshot(UUID hotelId){
         return hotelRepository.findHotelById(hotelId).getName();
+    }
+
+    public ApiResponse getAvailability(UUID hotelId, LocalDate checkIn, LocalDate checkOut){
+        List<Room_type> allRoomTypes = roomTypeRepository.findByHotel_Id(hotelId);
+        log.info("All room types: {}", allRoomTypes);
+
+        if (allRoomTypes.isEmpty())
+            return ApiResponse.builder()
+                    .code(404)
+                    .message((String.format("No available room for this time: %s to %s",checkIn.toString(),checkOut.toString())))
+                    .data(null)
+                    .build();
+        //Get from booking service
+        Map<UUID, Integer> bookedCount = bookingClient.getBookedRoomCounts(hotelId,checkIn,checkOut);
+
+        List<RoomAvailabilityResponse> resultList = allRoomTypes.stream()
+                .map(roomType -> {
+                    int totalRooms = roomType.getTotal_rooms();
+                    int bookedRooms = bookedCount.getOrDefault(roomType.getId(), 0);
+                    int availableRooms = totalRooms - Integer.parseInt(String.valueOf(bookedRooms));
+
+                    return new RoomAvailabilityResponse(
+                            roomType.getId(),
+                            roomType.getName(),
+                            roomType.getDescription(),
+                            roomType.getPrice_per_night(),
+                            availableRooms
+                    );
+                })
+                .filter(dto -> dto.getAvailableRooms() > 0)
+                .collect(Collectors.toList());
+
+        return ApiResponse.builder()
+                .code(82200)
+                .message("Availability rooms: ")
+                .data(resultList)
+                .build();
     }
 }

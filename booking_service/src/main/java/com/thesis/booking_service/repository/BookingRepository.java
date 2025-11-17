@@ -1,5 +1,6 @@
 package com.thesis.booking_service.repository;
 
+import com.thesis.booking_service.dto.response.BookedCountResponse;
 import com.thesis.booking_service.mapper.BookingStatus;
 import com.thesis.booking_service.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,23 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             @Param("statuses") List<String> statuses
     );
 
+    @Query(value =
+            "SELECT " +
+                    "    brt.room_type_id AS roomTypeId, " +
+                    "    CAST(SUM(brt.quantity) AS INT) AS booked_count " +
+                    "FROM " +
+                    "    booked_room_types brt " +
+                    "JOIN bookings b ON brt.booking_id = b.id " +
+                    "WHERE " +
+                    "    b.hotel_id = :hotelId " +
+                    "    AND b.status::text IN (:status)" +
+                    "    AND (b.check_in_date < :endDate AND b.check_out_date > :startDate) " +
+                    "GROUP BY brt.room_type_id",
+            nativeQuery = true)
+    List<BookedCountResponse> findBookedRoomCountsNative(
+            @Param("hotelId") UUID hotelId,
+            @Param("status") String status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }
