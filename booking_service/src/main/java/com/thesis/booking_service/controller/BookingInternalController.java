@@ -32,6 +32,7 @@ public class BookingInternalController {
             @RequestParam(required = true) LocalDate checkOut){
         String path = request.getMethod() + " " + request.getRequestURI() + "?" + request.getQueryString();
         log.info("API: -> {}", path);
+        log.info("Check in: {}", checkIn);
 
         Map<UUID,Integer> response = bookingService.getNumberBookedRoom(hotelId, checkIn, checkOut);
         return response;

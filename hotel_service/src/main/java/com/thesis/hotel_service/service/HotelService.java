@@ -277,6 +277,7 @@ public class HotelService {
                     .data(null)
                     .build();
         //Get from booking service
+        log.info("Check In : {}", checkIn);
         Map<UUID, Integer> bookedCount = bookingClient.getBookedRoomCounts(hotelId,checkIn,checkOut);
 
         List<RoomAvailabilityResponse> resultList = allRoomTypes.stream()
@@ -290,6 +291,7 @@ public class HotelService {
                             roomType.getName(),
                             roomType.getDescription(),
                             roomType.getPrice_per_night(),
+                            roomType.getTotal_rooms(),
                             availableRooms
                     );
                 })

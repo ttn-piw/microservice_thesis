@@ -16,5 +16,6 @@ public class RoomAvailabilityResponse {
     String name;
     String description;
     Double price_per_night;
+    Integer totalRooms;
     Integer availableRooms;
 }

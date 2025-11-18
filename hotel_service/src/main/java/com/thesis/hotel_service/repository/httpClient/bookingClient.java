@@ -1,6 +1,7 @@
 package com.thesis.hotel_service.repository.httpClient;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,6 +13,6 @@ import java.util.UUID;
 public interface bookingClient {
     @GetMapping("availableRoom")
     Map<UUID,Integer> getBookedRoomCounts(@RequestParam(required = true) UUID hotelId,
-                                       @RequestParam(required = true) LocalDate checkIn,
-                                       @RequestParam(required = true) LocalDate checkOut);
+                                       @RequestParam(required = true) @DateTimeFormat(pattern = "YYYY-MM-dd") LocalDate checkIn,
+                                       @RequestParam(required = true) @DateTimeFormat(pattern = "YYYY-MM-dd") LocalDate checkOut);
 }
