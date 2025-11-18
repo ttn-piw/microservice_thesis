@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/bookings.css">
+    <title>Booking Payment - TNEcoHotel</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav__container">
+            <div class="nav__logo">TNEcoHotel</div>
+            <div class="nav__steps">
+                <span class="active"><i class="ri-check-line"></i> Customer Info</span>
+                <span class="active"><i class="ri-check-line"></i> Payment</span>
+                <span>Confirmation</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="booking-container">
+        <div class="booking-left">
+
+            <section class="booking-card">
+                <div class="card-header">
+                    <h2><i class="ri-user-line"></i> Guest Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Full Name (Primary Guest)</label>
+                        <input type="text" id="guestName" placeholder="e.g. Tran Van A" required>
+                        <small>As on your passport/ID card.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="guestEmail" placeholder="e.g. email@example.com" required>
+                        <small>We will send the confirmation to this email.</small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="booking-card">
+                <div class="card-header">
+                    <h2><i class="ri-magic-line"></i> Special Requests</h2>
+                </div>
+                <div class="card-body">
+                    <p class="sub-text">Special requests are subject to availability.</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="Non-smoking room" class="special-req-cb"> Non-smoking
+                            room</label>
+                        <label><input type="checkbox" value="High floor" class="special-req-cb"> High floor</label>
+                        <label><input type="checkbox" value="Quiet room" class="special-req-cb"> Quiet room</label>
+                        <label><input type="checkbox" value="Late check-in" class="special-req-cb"> Late
+                            check-in</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Other requests</label>
+                        <textarea id="otherRequest" rows="3" placeholder="Others?"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="booking-card">
+                <div class="card-header">
+                    <h2><i class="ri-bank-card-line"></i> Payment Method</h2>
+                </div>
+                <div class="card-body">
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="card" checked>
+                            <div class="payment-content">
+                                <span class="pay-title"><i class="ri-visa-line"></i> Credit/Debit Card</span>
+                                <span class="pay-desc">Pay securely now.</span>
+                            </div>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="later">
+                            <div class="payment-content">
+                                <span class="pay-title"><i class="ri-hotel-line"></i> Pay at Hotel</span>
+                                <span class="pay-desc">Pay when you arrive. (Card needed to guarantee)</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div id="cardDetails" class="card-details-form">
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <input type="text" placeholder="MM/YY">
+                            </div>
+                            <div class="form-group">
+                                <label>CVC/CVV</label>
+                                <input type="text" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <button id="btnConfirmBooking" class="btn-submit">
+                COMPLETE BOOKING <i class="ri-lock-line"></i>
+            </button>
+            <button id="btnBackToHotel" class="btn-back">
+                <i class="ri-arrow-left-line"></i> Back to Hotel Details
+            </button>
+            <p class="secure-note"><i class="ri-shield-check-line"></i> Your booking is secured with SSL encryption.</p>
+        </div>
+
+        <div class="booking-right">
+            <div class="summary-card sticky">
+                <div class="hotel-header">
+                    <img id="summaryImage" src="../assets/images/default-placeholder.jpg" alt="Hotel">
+                    <div class="hotel-mini-info">
+                        <h3 id="summaryHotelName">Loading Hotel...</h3>
+                        <p id="summaryAddress"><i class="ri-map-pin-line"></i> Loading...</p>
+                        <div id="summaryStars" class="stars"></div>
+                    </div>
+                </div>
+
+                <div class="summary-details">
+                    <div class="detail-row">
+                        <div class="date-box">
+                            <span class="label">Check-in</span>
+                            <strong id="summaryCheckIn">--/--/----</strong>
+                        </div>
+                        <div class="arrow"><i class="ri-arrow-right-line"></i></div>
+                        <div class="date-box">
+                            <span class="label">Check-out</span>
+                            <strong id="summaryCheckOut">--/--/----</strong>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <span><i class="ri-moon-line"></i> Total Nights:</span>
+                        <strong id="summaryNights">0</strong>
+                    </div>
+                </div>
+
+                <div class="room-items" id="summaryRoomList">
+                </div>
+
+                <div class="price-section">
+                    <div class="price-row total">
+                        <span>Total Price</span>
+                        <span class="price-amount" id="summaryTotalPrice">0 VND</span>
+                    </div>
+                    <small>Includes taxes and fees</small>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="section__container footer__container">
+            <div class="footer__col">
+                <h3>TNEcoHotel</h3>
+                <p>
+                    TNEcoHotel is a premier hotel booking platform designed for both apps and websites, offering a
+                    seamless and convenient
+                    way to search and book accommodations worldwide.
+                <p>
+                    With an intuitive interface and an extensive selection of hotels, TNEcoHotel strives to provide a
+                    hassle-free experience
+                    for travelers in search of the ideal stay.
+                </p>
+            </div>
+            <div class="footer__col">
+                <h4>Company</h4>
+                <p>About Us</p>
+                <p>Our Team</p>
+                <p>Blog</p>
+                <p>Book</p>
+                <p>Contact Us</p>
+            </div>
+            <div class="footer__col">
+                <h4>Legal</h4>
+                <p>FAQs</p>
+                <p>Terms & Conditions</p>
+                <p>Privacy Policy</p>
+            </div>
+            <div class="footer__col">
+                <h4>Resources</h4>
+                <p>Social Media</p>
+                <p>Help Center</p>
+                <p>Partnerships</p>
+            </div>
+        </div>
+        <div class="footer__bar">
+            Copyright © 2023 Web Design Mastery. All rights reserved.
+        </div>
+    </footer>
+
+    <script type="module" src="/assets/js/pages/bookings.js"></script>
+</body>
+
+</html>
