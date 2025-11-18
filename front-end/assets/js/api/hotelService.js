@@ -87,6 +87,28 @@ export const searchHotels = async (searchParams) => {
     return apiResponse;
 };
 
+export async function getRoomAvailability(hotelId, checkIn, checkOut) {
+    const params = new URLSearchParams({ hotelId, checkIn, checkOut });
+    const url = `${HOTEL_API_URL}/availability?${params.toString()}`;
+    
+    console.log("Fetching availability from:", url);
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Failed to fetch room availability:", error);
+        return {
+            code: 500,
+            message: error.message,
+            data: []
+        };
+    }
+}
+
 export const createNewHotel = async (newHotelRequest) => {
     const response = await fetch(`${HOTEL_API_URL}/createHotel`, {
         method: 'POST',

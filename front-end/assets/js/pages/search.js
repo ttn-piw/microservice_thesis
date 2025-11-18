@@ -17,7 +17,6 @@ function hideMessage() {
     const messageContainer = document.getElementById('messageContainer');
     messageContainer.style.display = 'none';
 }
-
 /**
  * @param {Array} hotels 
  */
@@ -63,15 +62,36 @@ function renderHotelResults(hotels) {
 }
 
 function addClickEventsToCards() {
+    const checkIn = document.getElementById('checkInInput').value;
+    const checkOut = document.getElementById('checkOutInput').value;
+    // const room = document.getElementById('roomInput').value;
+
     document.querySelectorAll('.hotel-card').forEach(card => {
         card.addEventListener('click', () => {
             const hotelId = card.dataset.hotelId;
             if (hotelId) {
-                window.location.href = `hotel-details.html?hotel_id=${hotelId}`;
+                const params = new URLSearchParams();
+                params.append('hotel_id', hotelId);
+                if (checkIn) params.append('checkIn', checkIn);
+                if (checkOut) params.append('checkOut', checkOut);
+                // if (room) params.append('rooms', room);
+
+                window.location.href = `hotel-details.html?${params.toString()}`;
             }
         });
     });
 }
+
+// function addClickEventsToCards() {
+//     document.querySelectorAll('.hotel-card').forEach(card => {
+//         card.addEventListener('click', () => {
+//             const hotelId = card.dataset.hotelId;
+//             if (hotelId) {
+//                 window.location.href = `hotel-details.html?hotel_id=${hotelId}`;
+//             }
+//         });
+//     });
+// }
 
 async function performSearch(searchData) {
     const resultsGrid = document.getElementById('resultsGrid');

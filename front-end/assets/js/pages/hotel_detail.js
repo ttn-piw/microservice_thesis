@@ -1,5 +1,4 @@
-import { getHotelById } from '../api/hotelService.js';
-
+import { getHotelById, getRoomAvailability } from '../api/hotelService.js';
 
 const API_GATEWAY_URL = 'http://localhost:8888';
 const IMAGE_BASE_URL = `${API_GATEWAY_URL}/uploads/`;
@@ -7,7 +6,11 @@ const DEFAULT_IMAGE_URL = "../assets/images/default-placeholder.jpg";
 
 const urlParams = new URLSearchParams(window.location.search);
 const hotelId = urlParams.get('hotel_id');
-console.log("hotelURL", hotelId);
+const checkIn = urlParams.get('checkIn') == null ? '' : urlParams.get('checkIn'); 
+const checkOut = urlParams.get('checkOut') == null ? '' : urlParams.get('checkOut'); 
+const rooms = urlParams.get('rooms') || "1"
+
+console.log(`HotelID: ${hotelId}, CheckIn: ${checkIn}, CheckOut: ${checkOut}`);
 
 async function getUserId(userEmail) {
     try {
@@ -56,7 +59,6 @@ async function getUserId(userEmail) {
 
 async function loadHotelDetails(hotelId) {
     try {
-
         const apiResponse = await getHotelById(hotelId);
 
         if (apiResponse.code !== 200 || !apiResponse.data) {
@@ -69,9 +71,21 @@ async function loadHotelDetails(hotelId) {
         console.log('Hotel Data:', hotel);
 
         document.getElementById('hotelName').textContent = hotel.name;
-        const fullAddress = [hotel.address_line, hotel.city, hotel.state_province, hotel.country].filter(Boolean).join(', ');
-        document.getElementById('hotelAddress').textContent = fullAddress;
+        const fullAddress = [hotel.city, hotel.state_province].filter(Boolean).join(', ');
+        document.getElementById('hotelAddress').innerHTML = `<i class="ri-map-pin-line"></i> ${fullAddress}`;
+        document.getElementById('cityInput').value = hotel.city;
+        document.getElementById('hotelName').textContent = hotel.name;
         document.getElementById('hotelStars').textContent = `${hotel.star_rating} Stars`;
+        document.getElementById('hotelDescription').textContent = hotel.description || "No description available.";
+
+        const starsContainer = document.getElementById('hotelStars');
+        starsContainer.innerHTML = ''; // Xóa
+        for (let i = 0; i < hotel.star_rating; i++) {
+            const starIcon = document.createElement('i');
+            starIcon.className = 'fas fa-star';
+            starsContainer.appendChild(starIcon);
+        }
+
         document.getElementById('hotelDescription').textContent = hotel.description || "No description available.";
 
         const thumbnailImage = hotel.hotelImages.find(img => img.isThumbnail === true);
@@ -89,74 +103,83 @@ async function loadHotelDetails(hotelId) {
             document.getElementById('hotelImage').src = DEFAULT_IMAGE_URL; 
         }
 
-        const roomTypes = hotel.roomTypes || [];
-        const roomContainer = document.getElementById('roomContainer');
-        roomContainer.innerHTML = '';
-
-        let defaultRoomImgObj = hotel.hotelImages.find(img => !img.isThumbnail);
-        if (!defaultRoomImgObj && thumbnailImage) { 
-            defaultRoomImgObj = thumbnailImage;
-        }
-        const roomImgUrl = defaultRoomImgObj ? defaultRoomImgObj.imageUrl : '';
-
-        roomTypes.forEach(roomType => {
-            const availableRooms = roomType.rooms ? roomType.rooms.filter(room => room.status === 'available').length : 0;
-            const totalRooms = roomType.total_rooms;
-
-            const roomCard = document.createElement('div');
-            roomCard.className = 'room-card';
-
-            const displayRoomImg = roomImgUrl ? `${IMAGE_BASE_URL}${roomImgUrl}` : DEFAULT_IMAGE_URL;
-
-            roomCard.innerHTML = `
-                <img src="${displayRoomImg}" alt="${roomType.name}" class="room-image" />
-                <div class="room-info">
-                    <h3>${roomType.name}</h3>
-                    <p>${roomType.description}</p>
-                    <p><strong>Price:</strong> $${roomType.price_per_night}/night</p>
-                    <p><strong>Available:</strong> ${availableRooms}/${totalRooms}</p>
-                    ${availableRooms > 0
-                        ? `<button class="btn" onclick="showBookingForm('${roomType.id}', '${roomType.name}', '${displayRoomImg}', ${roomType.price_per_night}, '${hotel.id}')">Book Now</button>`
-                        : '<p><strong>Sold Out</strong></p>'
-                    }
-                </div>
-            `;
-            roomContainer.appendChild(roomCard);
-        });
-
     } catch (error) {
         console.error('Critical error loading hotel details:', error);
         alert('Failed to load hotel details: ' + error.message);
     }
 }
 
-// window.addToWishlist = async (roomId) => { 
-//     const userEmail = document.getElementById('UEmail').textContent.trim();
-//     if (userEmail === 'Account') {
-//         alert('Please log in to add items to your wishlist.');
-//         return;
-//     }
+async function loadAvailableRooms(hotelId, checkIn, checkOut) {
+    const roomContainer = document.getElementById('roomContainer');
+    
+    if (!checkIn || !checkOut) {
+        roomContainer.innerHTML = '<p>Vui lòng quay lại và chọn ngày check-in, check-out để xem các phòng trống.</p>';
+        return;
+    }
 
-//     try {
-//         const userId = await getUserId(userEmail);
-//         console.log("UserId:", userId);
+    roomContainer.innerHTML = '<p>Đang tìm phòng trống...</p>';
 
-//         const params = new URLSearchParams();
-//         params.append('pid', userId);
-//         params.append('ctgid', roomId); 
+    try {
+        const apiResponse = await getRoomAvailability(hotelId, checkIn, checkOut);
 
-//         const response = await fetch(`http://localhost:8080/wishlist/addToWishlist`, {
-//             method: 'POST',
-//             body: params
-//         });
-//         const data = await response.text();
-//         console.log("Response:", data);
-//         alert('Room added to wishlist!');
-//     } catch (error) {
-//         console.error('Error adding to wishlist:', error);
-//         alert('Failed to add room to wishlist.');
-//     }
-// };
+        if (apiResponse.code !== 82200 || !Array.isArray(apiResponse.data)) {
+            throw new Error(apiResponse.message || 'Could not load available rooms.');
+        }
+
+        renderAvailableRooms(apiResponse.data);
+
+    } catch (error) {
+        console.error('Error fetching availability:', error);
+        roomContainer.innerHTML = `<p>Lỗi khi tải danh sách phòng: ${error.message}</p>`;
+    }
+}
+
+function renderAvailableRooms(rooms) {
+    const roomContainer = document.getElementById('roomContainer');
+    roomContainer.innerHTML = '';
+
+    if (rooms.length === 0) {
+        roomContainer.innerHTML = '<p>Không tìm thấy phòng trống cho ngày bạn đã chọn.</p>';
+        return;
+    }
+
+    rooms.forEach(roomType => {
+        const roomCard = document.createElement('div');
+        roomCard.className = 'room-card';
+        
+        const displayRoomImg = DEFAULT_IMAGE_URL;
+
+        roomCard.innerHTML = `
+            <img src="${displayRoomImg}" alt="${roomType.name}" class="room-image" />
+            <div class="room-info">
+                <h3>${roomType.name}</h3>
+                <p>${roomType.description}</p>
+                <p><strong>Price:</strong> ${roomType.price_per_night.toLocaleString()} VND/night</p>
+                <p><strong>Available:</strong> ${roomType.availableRooms}/${roomType.totalRooms}</p>
+                ${roomType.availableRooms > 0
+                    ? `<button class="btn" onclick="showBookingForm('${roomType.id}', '${roomType.name}', '${displayRoomImg}', ${roomType.price_per_night}, '${hotelId}')">Book Now</button>`
+                    : '<p><strong>Sold Out</strong></p>'
+                }
+            </div>
+        `;
+        roomContainer.appendChild(roomCard);
+    });
+}
+
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1]; 
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Lỗi giải mã token:", e);
+        return null;
+    }
+}
 
 window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
     console.log("HotelId form:", hotelId);
@@ -188,6 +211,13 @@ window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
     const checkoutInput = formContainer.querySelector('#checkout');
     const totalPriceElement = formContainer.querySelector('#totalPrice');
 
+    if (checkIn) {
+        checkinInput.value = checkIn;
+    }
+    if (checkOut) {
+        checkoutInput.value = checkOut;
+    }
+
     const today = new Date().toISOString().split('T')[0];
     checkinInput.setAttribute('min', today);
 
@@ -204,11 +234,13 @@ window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
         if (checkinDate && checkoutDate && checkoutDate > checkinDate) {
             const time = Math.abs(checkoutDate - checkinDate);
             const days = Math.ceil(time / (1000 * 60 * 60 * 24));
-            totalPriceElement.textContent = days * roomPrice;
+            totalPriceElement.textContent = (days * roomPrice).toLocaleString();
         } else {
             totalPriceElement.textContent = '0';
         }
     }
+
+    calculateTotalPrice();
 
     checkinInput.addEventListener('change', calculateTotalPrice);
     checkoutInput.addEventListener('change', calculateTotalPrice);
@@ -265,7 +297,7 @@ window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
         } finally {
             document.body.removeChild(overlay);
             document.body.removeChild(formContainer);
-            location.reload(); 
+            // location.reload(); 
         }
     });
 };
@@ -281,6 +313,35 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+
+    const checkInInput = document.getElementById('checkInInput');
+    const checkOutInput = document.getElementById('checkOutInput');
+    const roomInput = document.getElementById('roomInput');
+    
+    if (checkIn) checkInInput.value = checkIn;
+    if (checkOut) checkOutInput.value = checkOut;
+    if (rooms) roomInput.value = rooms;
+
+    const newSearchForm = document.getElementById('searchFormNew');
+    newSearchForm.addEventListener('submit', (e) => {
+        e.preventDefault(); 
+
+        const newLocation = document.getElementById('cityInput').value;
+        const newCheckIn = checkInInput.value;
+        const newCheckOut = checkOutInput.value;
+        const newRooms = roomInput.value;
+
+        const queryParams = new URLSearchParams();
+        if (hotelId) queryParams.set('hotel_id', hotelId);
+        if (newLocation) queryParams.set('location', newLocation);
+        if (newCheckIn) queryParams.set('checkIn', newCheckIn);
+        if (newCheckOut) queryParams.set('checkOut', newCheckOut);
+        if (newRooms) queryParams.set('rooms', newRooms);
+
+        window.location.href = `hotel-details.html?${queryParams.toString()}`;
+    });
+
     loadHotelDetails(hotelId);
-    fetchReviews(hotelId);
+    loadAvailableRooms(hotelId, checkIn, checkOut);
+    // fetchReviews(hotelId);
 });
