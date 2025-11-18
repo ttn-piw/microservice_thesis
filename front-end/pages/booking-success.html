@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/booking.css">
+    <style>
+        .nav__container {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav__logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .nav__steps span {
+            margin-left: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .nav__steps span.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .success-container {
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #36d548;
+            margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .success-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .booking-id-box {
+            background: #f8f9fa;
+            border: 2px dashed #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .booking-id-label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .booking-id-code {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #5392f9;
+            letter-spacing: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-home,
+        .btn-view {
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-home {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        .btn-home:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-view {
+            background-color: #5392f9;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #487fd9;
+            box-shadow: 0 4px 10px rgba(83, 146, 249, 0.3);
+        }
+    </style>
+    <title>Booking Confirmed - TNEcoHotel</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav__container">
+            <div class="nav__logo">TNEcoHotel</div>
+            <div class="nav__steps">
+                <span class="active"><i class="ri-check-line"></i> Customer Info</span>
+                <span class="active"><i class="ri-check-line"></i> Payment</span>
+                <span class="active" style="color: #36d548"><i class="ri-checkbox-circle-fill"></i> Confirmed</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="success-container">
+            <i class="ri-checkbox-circle-fill success-icon"></i>
+            <h1 class="success-title">Booking Confirmed!</h1>
+            <p class="success-message">
+                Thank you! Your reservation has been placed successfully.<br>
+                We have sent a confirmation email to <strong id="userEmailDisplay">your email</strong>.
+            </p>
+
+            <div class="booking-id-box">
+                <span class="booking-id-label">Booking Reference ID</span>
+                <span class="booking-id-code" id="bookingIdDisplay">PENDING...</span>
+            </div>
+
+            <p style="margin-bottom: 30px; font-size: 0.9rem; color: #888;">
+                You can present this code at the hotel reception upon check-in.
+            </p>
+
+            <div class="action-buttons">
+                <a href="http://localhost:8080/hotels/home" class="btn-home">Return Home</a>
+                <a href="http://localhost:8080/bookings/bookedRoom" class="btn-view">My Bookings</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
+            if (bookingId) {
+                document.getElementById('bookingIdDisplay').textContent = bookingId;
+            } else {
+                document.getElementById('bookingIdDisplay').textContent = "UNKNOWN";
+            }
+
+            const token = localStorage.getItem('Bearer');
+            if (token) {
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+                    if (payload.sub) {
+                        document.getElementById('userEmailDisplay').textContent = payload.sub;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

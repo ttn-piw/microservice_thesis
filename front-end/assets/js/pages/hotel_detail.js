@@ -176,7 +176,7 @@ function parseJwt(token) {
 
         return JSON.parse(jsonPayload);
     } catch (e) {
-        console.error("Lỗi giải mã token:", e);
+        console.error("Error when parsing token: ", e);
         return null;
     }
 }
@@ -250,55 +250,61 @@ window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
         document.body.removeChild(formContainer);
     });
 
-    formContainer.querySelector('#bookingSubmitForm').addEventListener('submit', async (event) => {
+   formContainer.querySelector('#bookingSubmitForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const checkinDate = checkinInput.value;
         const checkoutDate = checkoutInput.value;
-        const totalPrice = totalPriceElement.textContent;
+        const totalPrice = totalPriceElement.textContent.replace(/,/g, ''); 
 
         if (totalPrice === '0' || !checkinDate || !checkoutDate) {
             alert('Please select valid check-in and check-out dates.');
             return;
         }
 
-        const userEmail = document.getElementById('UEmail').textContent.trim();
-        if (userEmail === 'Account') {
+        const token = localStorage.getItem('Bearer'); 
+        console.log("Booking with token:", token);
+
+        if (!token) {
             alert('Please log in to book a room.');
+            window.location.href = 'login.html'; 
             return;
         }
 
+        let userEmail;
         try {
-            const userId = await getUserId(userEmail);
-            console.log("Booking with UserId:", userId);
+            const payload = parseJwt(token);
+            if (!payload || !payload.sub) {
+                throw new Error("Invalid token payload.");
+            }
+            userEmail = payload.sub;
+            console.log("Booking with email (from token):", userEmail);
 
-            const response = await fetch('http://localhost:8080/bookings/booked', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    pid: userId,
-                    ctgid: roomId,
-                    hid: hotelId,
-                    money: totalPrice,
-                    checkInDate: checkinDate,
-                    checkOutDate: checkoutDate
-                })
-            });
-            
-            const data = await response.json(); 
-            console.log("booking_data:", data);
-            alert('Booking successful!');
-            
         } catch (error) {
-            console.error('Error booking room:', error);
-            alert('Booking request sent!'); 
-        } finally {
-            document.body.removeChild(overlay);
-            document.body.removeChild(formContainer);
-            // location.reload(); 
+            console.error("Token error:", error);
+            alert('Your session is invalid or expired. Please log in again.');
+            localStorage.removeItem('bearerToken'); 
         }
+
+        const bookingData = {
+        hotelId: hotelId, 
+        hotelName: document.getElementById('hotelName').textContent,
+        hotelAddress: document.getElementById('hotelAddress').textContent,
+        hotelImage: document.getElementById('hotelImage').src,
+        checkInDate: checkinInput.value,
+        checkOutDate: checkoutInput.value,
+        totalPrice: totalPriceElement.textContent.replace(/,/g, ''),
+        roomTypes: [
+            {
+                roomTypeId: roomId, 
+                roomTypeName: roomName, 
+                price: roomPrice,
+                quantity: 1
+            }
+        ]};
+        
+        sessionStorage.setItem('bookingSession', JSON.stringify(bookingData));
+        window.location.href = "bookings.html";
     });
 };
 
