@@ -239,10 +239,13 @@ public class BookingService {
 //            log.info("Booking: {}", booking);
             bookingRepository.save(booking);
 
+            BookingSuccessResponse response = new BookingSuccessResponse();
+            response.setId(booking.getId());
+
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())
-                    .message("SUCCESSFUL: New booking created")
-                    .data(null)
+                    .message(String.format("SUCCESSFUL: Your booking ID: %s", booking.getId()))
+                    .data(response)
                     .build();
     }
 
