@@ -1,4 +1,5 @@
 const BOOKING_API_URL = "http://localhost:8888/api/v1/bookings/bookings";
+import { sendConfirmationEmail } from '../api/emailService.js';
 
 function parseJwt(token) {
     try {
@@ -13,12 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!sessionData) {
         alert("No booking data found. Redirecting to home.");
-        // window.location.href = "/"; 
         return;
     }
 
     renderBookingSummary(sessionData);
-    //Auto fill email if logged in
     prefillUserInfo();
 
     //Handle button
@@ -113,6 +112,19 @@ async function handleBookingSubmit(sessionData) {
         }))
     };
 
+     const fullBookingData = {
+        ...sessionData,
+        guestName: fullName,
+        email: email,
+        specialRequests: finalSpecialRequests,
+        roomTypes: sessionData.roomTypes.map(rt => ({
+            roomTypeId: rt.roomTypeId,
+            roomTypeName: rt.roomTypeName,
+            quantity: parseInt(rt.quantity),
+            price: rt.price
+        }))
+    };
+
     console.log("Sending Booking Payload:", bookingPayload);
 
     btn.textContent = "Processing...";
@@ -134,10 +146,12 @@ async function handleBookingSubmit(sessionData) {
         if (response.ok) {
             const result = await response.json();
             alert("Booking Successful! Booking ID: " + (result.data.Id || "Confimed"));
-            
             console.log("Booking successful:", result.data);
+
             const bookingId = result.data?.id || result.id;
-            sessionStorage.removeItem('bookingSession');
+            sendConfirmationEmail(fullBookingData, bookingId);
+
+            // sessionStorage.removeItem('bookingSession');
             
             window.location.href = `/pages/booking-success.html?bookingId=${bookingId}`;
         } else {
