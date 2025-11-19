@@ -42,6 +42,7 @@ build/
 
 
 # CONFIG FILES
+src/main/resources/application.yaml
 .env
 **/.env
 .env.local
