@@ -1,13 +1,20 @@
 server:
   port: 8083
 
+
 jwt:
   signerKey: 6g>NnIdgCAQ]D)?J3$x7psIW?QYCW1J4q}Yr^pVjCjuy3#pyCbo/,aa@bFvX_egE
   expiration: 3600000
 
+api:
+  emailKey: xkeysib-1e8780463a6d4aa0c7ec6a440c3b670b775978c28067e8c1f
+
 spring:
   application:
     name: booking_service
+
+  config:
+    import: optional:file:.env
 
   datasource:
     url: jdbc:postgresql://localhost:5432/bookingservice_db

@@ -328,6 +328,23 @@ public class BookingService {
                 .build();
     }
 
+    public ApiResponse deleteBooking(UUID id){
+        Booking getBooking = bookingRepository.findBookingById(id);
+
+        if (getBooking == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format("FAIL: Booking with %s not found", id))
+                    .data(null)
+                    .build();
+
+        bookingRepository.deleteById(id);
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message(String.format("SUCCESSFULLY: Delete booking with id: %s ", id))
+                .build();
+    }
 
 //    INTERNAL METHOD
     public Map<UUID,Integer> getNumberBookedRoom(UUID hotelId, LocalDate checkIn, LocalDate checkOut){

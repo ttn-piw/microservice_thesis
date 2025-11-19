@@ -176,4 +176,20 @@ public class BookingController {
             return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
         }
     }
+
+    @DeleteMapping("/admin/{booking_id}")
+    public ResponseEntity<ApiResponse> deleteBooking(HttpServletRequest request,
+                                                     @PathVariable("booking_id") UUID id){
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+        var contextHolder = SecurityContextHolder.getContext().getAuthentication();
+        var email = contextHolder.getName();
+
+        log.info("Email: {}", email);
+
+        ApiResponse response = bookingService.deleteBooking(id);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
 }

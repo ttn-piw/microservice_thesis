@@ -12,6 +12,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(831006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(831007, "You do not have permission", HttpStatus.FORBIDDEN),
     BOOKINGS_NOT_EXISTED(831008, "Bookings not existed", HttpStatus.NOT_FOUND),
+    CANNOT_SEND_EMAIL(832500, "Cannot send email", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -1,15 +1,14 @@
 package com.thesis.booking_service.dto.request;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EmailRequest {
-    EmailRequest
+@Builder
+public class Sender {
+    String name;
+    String email;
 }
