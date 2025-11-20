@@ -249,6 +249,22 @@ public class BookingService {
                     .build();
     }
 
+    public ApiResponse getAllBookingsClient(String email){
+        List<Booking> getAllBookings = bookingRepository.findBookingByUserEmail(email);
+
+        if (getAllBookings.isEmpty())
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format(("No bookings found with email: %s not found"),email))
+                    .build();
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("SUCCESSFUL: Booking detail")
+                .data(getAllBookings)
+                .build();
+    }
+
     public ApiResponse getBookingDetailOfUser(String email, UUID id){
         Booking getBookingInfo = bookingRepository.findBookingByIdAndUserEmail(id,email);
         if (getBookingInfo == null)

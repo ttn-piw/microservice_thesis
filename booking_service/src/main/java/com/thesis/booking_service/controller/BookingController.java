@@ -136,6 +136,25 @@ public class BookingController {
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }
+    @GetMapping("/me/bookings")
+    public ResponseEntity<ApiResponse> getBookingDetailByUser(HttpServletRequest request){
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+        var contextHolder = SecurityContextHolder.getContext().getAuthentication();
+        var email = contextHolder.getName();
+
+        log.info("Email: {}", email);
+
+        try {
+            ApiResponse response = bookingService.getAllBookingsClient(email);
+            HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(response);
+        } catch(AppException e) {
+            return ResponseEntity.status(ErrorCode.UNAUTHENTICATED.getCode()).body(null);
+        }
+    }
+
 
     @GetMapping("/me/bookings/{booking_id}")
     public ResponseEntity<ApiResponse> getBookingDetailByUser(HttpServletRequest request,
