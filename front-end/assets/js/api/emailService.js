@@ -199,7 +199,7 @@ export async function sendConfirmationEmail(bookingData, bookingId) {
         checkOutDate: bookingData.checkOutDate,
         totalPrice: parseInt(bookingData.totalPrice).toLocaleString() + " VND",
         specialRequests: bookingData.specialRequests,
-        myBookingUrl: "http://localhost:8080/bookings/bookedRoom", //update email link
+        myBookingUrl: `http://localhost:8083/api/v1/bookings/me/bookings/${bookingId}`, //update email link
         
         roomDetails: bookingData.roomTypes.map(rt => {
             const nights = Math.ceil(Math.abs(new Date(bookingData.checkOutDate) - new Date(bookingData.checkInDate)) / (1000 * 60 * 60 * 24));

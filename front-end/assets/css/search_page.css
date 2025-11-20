@@ -253,24 +253,105 @@ nav {
 
 .footer__container {
     display: grid;
-    grid-template-columns: 2fr repeat(2, 1fr);
-    gap: 2rem;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 5rem;
 }
 
 .footer__col h3 {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--white);
     margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.footer__col h4 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .footer__col p {
+    margin-bottom: 1rem;
     color: var(--text-light);
-    margin-bottom: 0.5rem;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .footer__col p:hover {
     color: var(--white);
+}
+
+.footer__bar {
+    position: relative;
+    max-width: var(--max-width);
+    margin: auto;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-light);
+    text-align: right;
+    overflow: hidden;
+}
+
+.footer__bar::before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    right: 28rem;
+    transform: translateY(-50%);
+    width: 20rem;
+    height: 2px;
+    background-color: var(--text-light);
+}
+
+@media (width < 900px) {
+    .booking__container form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .popular__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .client__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .footer__container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (width < 600px) {
+    .nav__links {
+        display: none;
+    }
+
+    .header__container {
+        padding-bottom: 25rem;
+    }
+
+    .booking__container {
+        flex-direction: column;
+        bottom: -25rem;
+    }
+
+    .booking__container form {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .popular__grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .client__grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .footer__container {
+        gap: 2rem;
+    }
 }

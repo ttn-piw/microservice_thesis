@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/main_page.css" />
@@ -15,13 +16,12 @@
         <div class="nav__logo">TNEcoHotel</div>
         <ul class="nav__links">
             <li class="link"><a href="http://127.0.0.1:5500/pages/main-page.html">Home</a></li>
-            <li class="link"><a href="#">Hotel</a></li>
             <li class="link"><a href="#">About Us</a></li>
             <li class="link">
                 <a th:text="${userEmail != null ? userEmail : 'Account'}">Account</a>
                 <ul class="dropdown_menu">
                     <li><a href="http://localhost:8080/persons/update">Information</a></li>
-                    <li><a href="http://localhost:8080/bookings/bookedRoom">Booked</a></li>
+                    <li><a href="booked.html">Booked</a></li>
                     <li><a href="http://localhost:8888/api/v1/hotels/myHotel">My hotels</a></li>
                     <li><a href="http://localhost:8080/users/logout">Log out</a></li>
                 </ul>
@@ -64,9 +64,59 @@
                 <button type="submit" class="btn" form="searchForm"><i class="ri-search-line"></i></button>
     </header>
 
+    <section class="section__container">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Popular Destinations</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="http://127.0.0.1:5500/pages/search.html?location=Hanoi" class="destination-card"
+                style="background: url('https://placehold.co/400x300/e0b16f/FFFFFF?text=Hanoi') no-repeat center center/cover;">
+                <h3>Hanoi</h3>
+            </a>
+            <a href="http://127.0.0.1:5500/pages/search.html?location=Ho+Chi+Minh+City" class="destination-card"
+                style="background: url('https://placehold.co/400x300/5392f9/FFFFFF?text=Ho+Chi+Minh+City') no-repeat center center/cover;">
+                <h3>Ho Chi Minh</h3>
+            </a>
+            <a href="http://127.0.0.1:5500/pages/search.html?location=Da+Nang" class="destination-card"
+                style="background: url('https://placehold.co/400x300/a8dadc/FFFFFF?text=Da+Nang') no-repeat center center/cover;">
+                <h3>Da Nang</h3>
+            </a>
+            <a href="http://127.0.0.1:5500/pages/search.html?location=Can+Tho" class="destination-card"
+                style="background: url('https://placehold.co/400x300/8d99ae/FFFFFF?text=Can+Tho') no-repeat center center/cover;">
+                <h3>Can Tho</h3>
+            </a>
+        </div>
+    </section>
+
     <section class="section__container popular__container">
-        <h2 class="section__header">Popular Hotels</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Popular Hotels</h2>
         <div class="popular__grid" id="popularHotelsGrid">
+        </div>
+    </section>
+
+    <section class="section__container pt-[6rem] lg:pt-[8rem]">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Featured Deals</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="deal-card">
+                <div class="flex items-center text-agoda mb-2"><i class="ri-flight-takeoff-line mr-2"></i> LIMITED TIME
+                    OFFER</div>
+                <h3 class="text-xl font-semibold mb-1">Last Minute Savings</h3>
+                <p class="text-sm text-gray-600 mb-4">Book today and get up to 40% off the best rooms!</p>
+                <a href="#" class="text-sm font-semibold text-agoda hover:underline">View Deals <i
+                        class="ri-arrow-right-line"></i></a>
+            </div>
+            <div class="deal-card">
+                <div class="flex items-center text-agoda mb-2"><i class="ri-hand-coin-line mr-2"></i> WEEKLY SPECIAL</div>
+                <h3 class="text-xl font-semibold mb-1">Stay 3, Pay 2</h3>
+                <p class="text-sm text-gray-600 mb-4">Extend your vacation with a free night on us.</p>
+                <a href="#" class="text-sm font-semibold text-agoda hover:underline">Explore Now <i
+                        class="ri-arrow-right-line"></i></a>
+            </div>
+            <div class="deal-card">
+                <div class="flex items-center text-agoda mb-2"><i class="ri-vip-line mr-2"></i> TNEcoHotel VIP</div>
+                <h3 class="text-xl font-semibold mb-1">Member Exclusive Pricing</h3>
+                <p class="text-sm text-gray-600 mb-4">Sign up for free and unlock instant discounts.</p>
+                <a href="#" class="text-sm font-semibold text-agoda hover:underline">Join & Save <i
+                        class="ri-arrow-right-line"></i></a>
+            </div>
         </div>
     </section>
 
@@ -113,10 +163,6 @@
         </div>
     </section>
 
-    <section class="map__container">
-        <div id="map" class="map"></div>
-    </section>
-
     <footer class="footer">
         <div class="section__container footer__container">
             <div class="footer__col">
@@ -156,21 +202,6 @@
             Copyright © 2023 Web Design Mastery. All rights reserved.
         </div>
     </footer>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries"></script>\
-<script>
-     function initMap() {
-            const location = { lat: 10.030009, lng: 105.7699716 };
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: location,
-            });
-            new google.maps.Marker({
-                position: location,
-                map: map,
-            });
-        }
-</script>
     <!-- <script src="/assets/js/api/hotelService.js"></script> -->
     <script script type="module" src="/assets/js/pages/main_page.js"></script>
 </body>

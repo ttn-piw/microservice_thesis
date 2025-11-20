@@ -34,8 +34,13 @@ a {
 }
 
 img {
-    width: 100%;
+    width: 100%;    
     display: flex;
+}
+
+.popular__grid img {
+    height: 250px;
+    object-fit: cover;
 }
 
 body {
@@ -457,15 +462,46 @@ nav {
     background-color: var(--primary-color-dark);
 }
 
-.map__container {
-    width: 100%;
-    height: 400px;
-    margin-bottom: 20px;
+.deal-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
 }
 
-.map {
-    width: 100%;
-    height: 100%;
+.deal-card:hover {
+    transform: translateY(-5px);
+}
+
+.destination-card {
+    height: 300px;
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.destination-card h3 {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    z-index: 20;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.destination-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    z-index: 10;
 }
 
 .footer {

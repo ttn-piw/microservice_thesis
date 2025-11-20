@@ -113,11 +113,11 @@ async function loadAvailableRooms(hotelId, checkIn, checkOut) {
     const roomContainer = document.getElementById('roomContainer');
     
     if (!checkIn || !checkOut) {
-        roomContainer.innerHTML = '<p>Vui lòng quay lại và chọn ngày check-in, check-out để xem các phòng trống.</p>';
+        roomContainer.innerHTML = '<p>Please go back and select check-in and check-out dates to see available rooms.</p>';
         return;
     }
 
-    roomContainer.innerHTML = '<p>Đang tìm phòng trống...</p>';
+    roomContainer.innerHTML = '<p>Searching for available rooms...</p>';
 
     try {
         const apiResponse = await getRoomAvailability(hotelId, checkIn, checkOut);
@@ -139,7 +139,7 @@ function renderAvailableRooms(rooms) {
     roomContainer.innerHTML = '';
 
     if (rooms.length === 0) {
-        roomContainer.innerHTML = '<p>Không tìm thấy phòng trống cho ngày bạn đã chọn.</p>';
+        roomContainer.innerHTML = '<p>No available rooms found for the dates you selected.</p>';
         return;
     }
 

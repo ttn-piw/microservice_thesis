@@ -151,7 +151,7 @@ async function handleBookingSubmit(sessionData) {
             const bookingId = result.data?.id || result.id;
             sendConfirmationEmail(fullBookingData, bookingId);
 
-            // sessionStorage.removeItem('bookingSession');
+            sessionStorage.removeItem('bookingSession');
             
             window.location.href = `/pages/booking-success.html?bookingId=${bookingId}`;
         } else {

@@ -104,6 +104,8 @@ async function performSearch(searchData) {
         if (apiResponse && (apiResponse.code === 82200 || apiResponse.code === 200) && Array.isArray(apiResponse.data)) {
             hideMessage();
             renderHotelResults(apiResponse.data);
+        } if (apiResponse.code === 83104) {
+            showMessage('no-results', 'No hotels found matching your finding location.');
         } else {
             showMessage('error', `Search failed: ${apiResponse.message}`);
         }

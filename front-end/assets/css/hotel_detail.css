@@ -49,6 +49,11 @@ nav {
     color: var(--text-dark);
 }
 
+.nav__logo a {
+    text-decoration: none;
+    color: var(--text-dark);
+}
+
 .nav__links {
     list-style: none;
     display: flex;
