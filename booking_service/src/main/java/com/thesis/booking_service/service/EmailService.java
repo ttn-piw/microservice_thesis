@@ -9,9 +9,11 @@ import com.thesis.booking_service.exception.ErrorCode;
 import com.thesis.booking_service.repository.httpClient.emailClient;
 import feign.FeignException;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,16 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailService {
+    @Autowired
     emailClient emailClient;
 
+<<<<<<< HEAD
     @Value("${api.emailKey}")
+=======
+    @Value("${API_EMAILKEY}")
+>>>>>>> fa03f04 (Config env)
     String apiKey;
 
     public EmailResponse sendEmai(SendEmailRequest request) {
