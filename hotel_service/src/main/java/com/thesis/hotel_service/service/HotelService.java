@@ -239,6 +239,13 @@ public class HotelService {
 
         List<HotelMainPageResponse> search_hotels = hotelMapper.toHotelMainPageResponse(hotelRepository.findAll(spec));
 
+        if (search_hotels.isEmpty())
+            return ApiResponse.builder()
+                    .code(83104)
+                    .message("SUCCESSFULLY: No available hotels")
+                    .data(null)
+                    .build();
+
         return ApiResponse.builder()
                 .code(82200)
                 .message("SUCCESSFULLY: DATA FOR SEARCHING")
