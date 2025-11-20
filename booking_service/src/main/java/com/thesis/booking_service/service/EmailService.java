@@ -26,11 +26,7 @@ public class EmailService {
     @Autowired
     emailClient emailClient;
 
-<<<<<<< HEAD
-    @Value("${api.emailKey}")
-=======
     @Value("${API_EMAILKEY}")
->>>>>>> fa03f04 (Config env)
     String apiKey;
 
     public EmailResponse sendEmai(SendEmailRequest request) {
