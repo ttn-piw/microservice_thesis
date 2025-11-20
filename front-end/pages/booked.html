@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | TNEcoHotel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        .text-agoda {
+            color: #5392f9;
+        }
+
+        .border-agoda {
+            border-color: #5392f9;
+        }
+
+        .bg-agoda {
+            background-color: #5392f9;
+        }
+
+        .booking-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <a href="main-page.html" class="text-2xl font-bold text-gray-800">TNEcoHotel</a>
+            <a href="main-page.html" class="text-agoda hover:text-blue-700 font-medium">
+                <i class="ri-home-4-line mr-1"></i> Home
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-8 flex items-center">
+            <i class="ri-calendar-check-line text-agoda mr-3"></i> My Bookings
+        </h1>
+        <div id="messageContainer" class="p-4 rounded-lg font-medium hidden"></div>
+        <div id="bookingsList" class="space-y-6">
+        </div>
+
+    </main>
+
+    <footer class="mt-12 p-4 text-center text-sm text-gray-500 border-t border-gray-200">
+        &copy; 2025 TNEcoHotel. All rights reserved.
+    </footer>
+    <script type="module" src="/assets/js/pages/booked.js"></script>
+</body>
+
+</html>
