@@ -1,5 +1,7 @@
 
 import { loginUser } from '../api/authService.js';
+import { parseJwt } from '../utils/jwtUtils.js';
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
@@ -23,6 +25,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (apiResponse.data && apiResponse.data.token) {
                 localStorage.setItem('Bearer', apiResponse.data.token);
+                
+                const token = localStorage.getItem('Bearer'); 
+
+            if (token) {
+                const payload = parseJwt(token);
+
+                if (payload && payload.scope) {
+                    const userScope = payload.scope.toUpperCase();
+                    console.log("User scope:", userScope);
+
+                    if (userScope.includes('ADMIN')) {
+                        window.location.href = 'admin-page.html';
+                        return; 
+                    } 
+                }
+            }
 
                 responseMessageEl.textContent = 'Login successful! Redirecting...';
                 responseMessageEl.classList.add('text-success');
