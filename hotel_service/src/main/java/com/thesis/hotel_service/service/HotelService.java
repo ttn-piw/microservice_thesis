@@ -299,7 +299,8 @@ public class HotelService {
                             roomType.getDescription(),
                             roomType.getPrice_per_night(),
                             roomType.getTotal_rooms(),
-                            availableRooms
+                            availableRooms,
+                            roomType.getRoomTypeImages()
                     );
                 })
                 .filter(dto -> dto.getAvailableRooms() > 0)

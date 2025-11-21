@@ -13,6 +13,7 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         Path uploadDir = Paths.get("uploads");
+//        "path -> file:D:/microservice/uploads/"
         String uploadPath = uploadDir.toFile().getAbsolutePath();
 
         // Add resource have format /uploads/**

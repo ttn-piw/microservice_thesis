@@ -42,4 +42,7 @@ public class Room_type {
     @OneToMany(mappedBy = "room_type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     List<Room> rooms;
+
+    @OneToMany(mappedBy = "room_type", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Room_type_image> roomTypeImages;
 }
