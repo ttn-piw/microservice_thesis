@@ -147,7 +147,21 @@ function renderAvailableRooms(rooms) {
         const roomCard = document.createElement('div');
         roomCard.className = 'room-card';
         
-        const displayRoomImg = DEFAULT_IMAGE_URL;
+        let displayRoomImg = DEFAULT_IMAGE_URL;
+
+        if (roomType.roomTypeImages && roomType.roomTypeImages.length > 0) {
+            const thumbnailImage = roomType.roomTypeImages.find(img => img.isThumbnail === true);
+            let imageFileName = ""; 
+
+            if (thumbnailImage) {
+                imageFileName = thumbnailImage.imageUrl;
+                displayRoomImg = `${IMAGE_BASE_URL}${imageFileName}`;
+            } else {
+                imageFileName = roomType.roomTypeImages[0].imageUrl;
+                displayRoomImg = `${IMAGE_BASE_URL}${imageFileName}`;
+            }
+
+        }
 
         roomCard.innerHTML = `
             <img src="${displayRoomImg}" alt="${roomType.name}" class="room-image" />
