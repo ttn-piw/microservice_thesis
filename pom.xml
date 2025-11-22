@@ -21,6 +21,7 @@
 		<module>api_gateway</module>
 		<module>hotel_service</module>
 		<module>booking_service</module>
+		<module>chat_service</module>
 	</modules>
 
 	<properties>
