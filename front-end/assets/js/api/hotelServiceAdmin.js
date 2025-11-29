@@ -39,6 +39,29 @@ export async function getAllHotelsAdmin() {
     }
 }
 
+export async function getHotelById(hotelId) {
+    try {
+        const token = getToken();
+        const response = await fetch(`${BASE_URL}/${hotelId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.status === 401 || response.status === 403) {
+            throw new Error("Session expired or unauthorized.");
+        }
+        
+        const data = await response.json();
+        if (data.code !== 200 || !response.ok) {
+            throw new Error(data.message || "Failed to fetch hotel details.");
+        }
+        return data.data;
+    } catch (error) {
+        console.error(`Error fetching hotel ${hotelId}:`, error);
+        throw error;
+    }
+}
+
 export async function createNewHotel(hotelData) {
     try {
         const token = getToken();
@@ -93,6 +116,30 @@ export async function uploadHotelImage(file, hotelId) {
     }
 }
 
+
+export async function updateHotelInfo(hotelId, hotelData) {
+    try {
+        const token = getToken();
+        const response = await fetch(`${BASE_URL}/updateHotel/${hotelId}`, {
+            method: 'PUT', 
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(hotelData)
+        });
+        
+        const data = await response.json();
+        if (!response.ok || data.code !== 200) {
+            throw new Error(data.message || "Failed to update hotel.");
+        }
+        return data.data;
+    } catch (error) {
+        console.error("Error updating hotel:", error);
+        throw error;
+    }
+}
+
 export async function deleteHotelById(hotelId) {
     try {
         const token = getToken();
@@ -112,6 +159,34 @@ export async function deleteHotelById(hotelId) {
         }
     } catch (error) {
         console.error("Error deleting hotel:", error);
+        throw error;
+    }
+}
+
+export async function getRoomTypeById(roomTypeId) {
+    // GET /api/v1/roomTypes/{roomTypeId}
+    console.log("Fetching room type with ID:", roomTypeId);
+    try {
+        const token = getToken();
+        const response = await fetch(`${ROOM_TYPE_API_URL}/${roomTypeId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            throw new Error("Session expired or unauthorized.");
+        }
+        
+        const data = await response.json(); 
+        
+        if (data.code !== 200 || !response.ok) {
+            throw new Error(data.message || "Failed to fetch room type details.");
+        }
+        
+        return data.data;
+
+    } catch (error) {
+        console.error(`Error fetching room type ${roomTypeId}:`, error);
         throw error;
     }
 }
@@ -194,3 +269,28 @@ export async function uploadRoomTypeImage(file, roomTypeId) {
         throw error;
     }
 }
+
+export async function updateRoomTypeInfo(roomTypeId, roomTypeData) {
+    // API: PUT /api/v1/roomTypes/{roomTypeId}
+    try {
+        const token = getToken();
+        const response = await fetch(`${ROOM_TYPE_API_URL}/${roomTypeId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(roomTypeData)
+        });
+        
+        const data = await response.json();
+        if (!response.ok || data.code !== 200) {
+            throw new Error(data.message || "Failed to update room type.");
+        }
+        return data.data;
+    } catch (error) {
+        console.error("Error updating room type:", error);
+        throw error;
+    }
+}
+
