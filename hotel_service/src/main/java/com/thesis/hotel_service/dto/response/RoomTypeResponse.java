@@ -11,12 +11,14 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomTypeResponse {
+    UUID id;
     String name;
     String description;
     Float price_per_night;
