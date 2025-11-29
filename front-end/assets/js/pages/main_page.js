@@ -148,6 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
        console.warn("Best reviews section is under maintenance.");
     }
 
+    document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('Bearer');
+            sessionStorage.clear();
+            alert('Logging out...');
+            window.location.href = 'main-page.html';
+        });
+
     loadPopularHotels();
     loadBestReviews(); 
 });
