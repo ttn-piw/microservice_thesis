@@ -1,4 +1,5 @@
 const EMAIL_API_ENDPOINT = 'http://localhost:8888/api/v1/bookings/email/send';
+const MY_BOOKING_URL_BASE = '127.0.0.1/pages/booked.html';
 
 const EMAIL_TEMPLATE_HTML = `
 <!DOCTYPE html>
@@ -199,7 +200,7 @@ export async function sendConfirmationEmail(bookingData, bookingId) {
         checkOutDate: bookingData.checkOutDate,
         totalPrice: parseInt(bookingData.totalPrice).toLocaleString() + " VND",
         specialRequests: bookingData.specialRequests,
-        myBookingUrl: `http://http://127.0.0.1:5500/pages/booked.html`,
+        myBookingUrl: `${MY_BOOKING_URL_BASE}`,
         
         roomDetails: bookingData.roomTypes.map(rt => {
             const nights = Math.ceil(Math.abs(new Date(bookingData.checkOutDate) - new Date(bookingData.checkInDate)) / (1000 * 60 * 60 * 24));
