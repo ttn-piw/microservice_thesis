@@ -419,7 +419,9 @@ async function handleCreateRoomTypeSubmit(event, hotelId, hotelName) {
     try {
         submitButton.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i> (1/2) Creating record...';
         const createdRoomType = await createNewRoomType(newRoomType, hotelId);
-        const roomTypeId = createdRoomType.id;
+        console.log("Created room type:", createdRoomType);
+        // Back-end only return room type ID
+        const roomTypeId = createdRoomType;
 
         if (!roomTypeId) {
             throw new Error("Server did not return room type ID. Creating room type failed.");
@@ -431,7 +433,7 @@ async function handleCreateRoomTypeSubmit(event, hotelId, hotelName) {
         }
 
         // Success
-        alert(`Created room type "${createdRoomType.name}" for hotel ${hotelName} successfully!`);
+        alert(`Created new room type for hotel ${hotelName} successfully!`);
 
         const roomTypes = await getRoomTypesByHotelId(hotelId);
         renderRoomTypeTable(roomTypes);
