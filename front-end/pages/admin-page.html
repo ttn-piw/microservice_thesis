@@ -83,24 +83,28 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr class="bg-gray-50">
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Hotel Name</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Address</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Stars</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Created Date</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        ID</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                        data-sort-field="name">
+                                        Hotel Name <span class="sort-icon" id="sort-icon-name"></span>
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                        data-sort-field="city">
+                                        Location <span class="sort-icon" id="sort-icon-city"></span>
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                        data-sort-field="star_rating">
+                                        Star Rating <span class="sort-icon" id="sort-icon-star_rating"></span>
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header"
+                                        data-sort-field="created_at">
+                                        Created At <span class="sort-icon" id="sort-icon-created_at"></span>
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="hotelTableBody" class="bg-white divide-y divide-gray-200">

@@ -9,6 +9,9 @@ const MODAL_CONTAINER_ID = 'createHotelModalContainer';
 const ROOM_TYPE_MODAL_CONTAINER_ID = 'roomTypeModalContainer'; 
 const IMAGE_BASE_URL = 'http://localhost:8888/uploads'
 
+let hotelDataCache = [];
+let currentSort = { field: 'created_at', direction: 'desc' };
+
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
     try {
@@ -35,7 +38,7 @@ function renderHotelTable(hotels) {
         row.className = 'hover:bg-gray-50';
 
         row.insertCell().textContent = hotel.name;
-        row.insertCell().textContent = `${hotel.city}, ${hotel.country}`;
+        row.insertCell().textContent = `${hotel.address_line}, ${hotel.city}`;
         row.insertCell().textContent = hotel.star_rating;
         row.insertCell().textContent = formatDate(hotel.created_at);
         
@@ -68,15 +71,66 @@ function renderHotelTable(hotels) {
     });
 }
 
+function sortHotels(field, direction) {
+    if (!hotelDataCache || hotelDataCache.length === 0) return;
+
+    const sortedHotels = [...hotelDataCache].sort((a, b) => {
+        const valA = a[field];
+        const valB = b[field];
+
+        if (typeof valA === 'number' && typeof valB === 'number') {
+            return direction === 'asc' ? valA - valB : valB - valA;
+        }
+        
+        // Arrange number and date strings correctly
+        const strA = String(valA || '').toLowerCase();
+        const strB = String(valB || '').toLowerCase();
+
+        // If (A before B & direction = "asc" -> A before B)
+        if (strA < strB) return direction === 'asc' ? -1 : 1;
+        if (strA > strB) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    currentSort = { field, direction };
+    renderHotelTable(sortedHotels);
+    updateSortIcons();
+}
+
+function updateSortIcons() {
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+        icon.innerHTML = '';
+    });
+
+    const iconElement = document.getElementById(`sort-icon-${currentSort.field}`);
+    if (iconElement) {
+        iconElement.innerHTML = currentSort.direction === 'asc' ? '<i class="ri-arrow-up-s-line"></i>' : '<i class="ri-arrow-down-s-line"></i>';
+    }
+}
+
+function setupSorting() {
+    document.querySelectorAll('.sortable-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const field = header.getAttribute('data-sort-field');
+            let direction = 'asc';
+
+            if (currentSort.field === field) {
+                // Return 'desc' for latest created_at default
+                direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            }
+            sortHotels(field, direction);
+        });
+    });
+    // Initial sort
+    sortHotels(currentSort.field, currentSort.direction);
+}
+
 // --- Event Handlers ---
-async function handleDeleteClick(event) {
-    const hotelId = event.currentTarget.dataset.hotelId;
-    const hotelName = event.currentTarget.dataset.hotelName;
+async function handleDeleteClick(hotelId, hotelName) {
+    console.log("Delete button clicked:", hotelId, hotelName);
 
     if (confirm(`Bạn có chắc chắn muốn xóa khách sạn "${hotelName}" (ID: ${hotelId.substring(0, 8)}...)?`)) {
         try {
-            event.currentTarget.disabled = true;
-            event.currentTarget.textContent = 'Deleting...';
 
             await deleteHotelById(hotelId);
             alert(`Hotel: ${hotelName} deleted successfully.`);
@@ -85,8 +139,6 @@ async function handleDeleteClick(event) {
 
         } catch (error) {
             alert(`Error deleting hotel: ${error.message}`);
-            event.currentTarget.disabled = false;
-            event.currentTarget.textContent = ' Delete';
         }
     }
 }
@@ -101,8 +153,10 @@ async function loadAdminDashboard() {
 
     try {
         const hotels = await getAllHotelsAdmin();
-        console.log("Fetched hotels for admin dashboard:", hotels);
-        renderHotelTable(hotels);
+        
+        hotelDataCache = hotels;
+        setupSorting();
+        
         if (messageBox) messageBox.classList.add('hidden');
     } catch (error) {
         const errorMessage = error.message.includes("Session expired") 
