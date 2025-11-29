@@ -1,5 +1,6 @@
 package com.thesis.hotel_service.controller;
 
+import com.thesis.hotel_service.dto.request.NewRoomTypeRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.dto.response.RoomTypeResponse;
 import com.thesis.hotel_service.mapper.RoomMapper;
@@ -54,6 +55,20 @@ public class RoomTypeController {
         log.info("{} {} ", request.getMethod(), request.getRequestURI());
 
         ApiResponse response = roomTypeService.getRoomTypeByHotelId(hotelId);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @PostMapping("/hotel/{hotelId}")
+    public ResponseEntity<ApiResponse> createNewRoomType(
+            HttpServletRequest request,
+            @RequestBody NewRoomTypeRequest roomTypeRequest,
+            @PathVariable("hotelId") UUID hotelId){
+
+        log.info("{} {} ", request.getMethod(), request.getRequestURI());
+
+        ApiResponse response = roomTypeService.createNewRoomType(roomTypeRequest, hotelId);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(status).body(response);

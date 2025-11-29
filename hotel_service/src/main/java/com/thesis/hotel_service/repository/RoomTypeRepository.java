@@ -11,4 +11,6 @@ public interface RoomTypeRepository extends JpaRepository<Room_type, UUID>{
     Room_type findRoom_typeById(UUID roomTypeId);
 
     List<Room_type> findByHotel_Id(UUID hotelId);
+
+    Boolean existsRoom_typeByName(String name);
 }
