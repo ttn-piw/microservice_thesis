@@ -164,7 +164,7 @@ public class HotelService {
 
         hotelRepository.save(newHotel);
 
-        return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(null).build();
+        return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(newHotel.getId()).build();
     }
 
     public ApiResponse updatedHotelInfo(UUID hotelId, HotelUpdateRequest hotelInfo){

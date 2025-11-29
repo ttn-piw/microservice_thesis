@@ -1,5 +1,7 @@
 package com.thesis.hotel_service.dto.response;
 
+import com.thesis.hotel_service.model.Room_type;
+import com.thesis.hotel_service.model.Room_type_image;
 import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,4 +29,6 @@ public class RoomTypeResponse {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     OffsetDateTime updated_at;
+
+    List<Room_type_image> roomTypeImages;
 }
