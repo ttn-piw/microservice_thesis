@@ -1,6 +1,8 @@
 package com.thesis.hotel_service.service;
 
+import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewRoomTypeRequest;
+import com.thesis.hotel_service.dto.request.RoomTypeUpdateRequest;
 import com.thesis.hotel_service.dto.response.ApiResponse;
 import com.thesis.hotel_service.dto.response.RoomTypeResponse;
 import com.thesis.hotel_service.exception.ErrorCode;
@@ -15,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,6 +117,37 @@ public class RoomTypeService {
                 .code(HttpStatus.OK.value())
                 .message(String.format("SUCCESSFULLY: New room type created with :%s",hotelId.toString()))
                 .data(newRoomType.getId())
+                .build();
+    }
+
+    public ApiResponse updatedRoomTypeInfo(UUID roomTypeId, RoomTypeUpdateRequest roomTypeUpdate){
+        Room_type getRoomTypeInfo = roomTypeRepository.findRoom_typeById(roomTypeId);
+
+        if (getRoomTypeInfo == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format(("Room Type not found with id: %s"), roomTypeId.toString()))
+                    .data(null)
+                    .build();
+
+        //Handle validation name
+        if (roomTypeRepository.existsRoom_typeByName(roomTypeUpdate.getName()))
+            return ApiResponse.builder()
+                    .code(HttpStatus.CONFLICT.value())
+                    .message("Room type name exited!")
+                    .data(null)
+                    .build();
+
+        roomTypeMapper.updatedRoomType(getRoomTypeInfo,roomTypeUpdate);
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        getRoomTypeInfo.setUpdated_at(currentTime);
+
+        roomTypeRepository.save(getRoomTypeInfo);
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("SUCCESSFULLY: UPDATED new hotel's info")
+                .data(getRoomTypeInfo)
                 .build();
     }
 

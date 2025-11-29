@@ -1,33 +1,28 @@
 package com.thesis.hotel_service.dto.request;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thesis.hotel_service.model.Hotel;
+import com.thesis.hotel_service.model.Room;
+import com.thesis.hotel_service.model.Room_type_image;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class HotelUpdateRequest {
+public class RoomTypeUpdateRequest {
     String name;
     String description;
-    Integer star_rating;
-    String address_line;
-    String city;
-    String state_province;
-    String postal_code;
-    String country;
-    String phone_number;
-    String email;
-    String check_in_time;
-    String check_out_time;
+    Double price_per_night;
+    Integer capacity_adults;
+    Integer capacity_children;
+    Integer total_rooms;
     OffsetDateTime updated_at;
 }
