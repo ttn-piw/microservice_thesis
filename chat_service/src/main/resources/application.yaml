@@ -12,4 +12,8 @@ spring:
         base-url: https://generativelanguage.googleapis.com
         completions-path: /v1beta/openai/chat/completions
         options:
-          model: gemini-2.0-flash
+              model: gemini-2.0-flash
+
+logging:
+  level:
+    org.springframework.ai: DEBUG

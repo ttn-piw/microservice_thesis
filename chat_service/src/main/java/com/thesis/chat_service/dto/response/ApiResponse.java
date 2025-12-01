@@ -10,5 +10,10 @@ import org.springframework.context.annotation.Profile;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class ApiResponse<T> {
+    @Builder.Default
+    int code = 8083404;
+
+    String message;
+
     T data;
 }

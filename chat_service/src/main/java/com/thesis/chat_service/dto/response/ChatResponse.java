@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChatResponse {
     String name;
-    String year;
+//    String total_rooms;
     String describe;
 }

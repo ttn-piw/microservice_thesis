@@ -10,8 +10,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChatResponseFlims {
+public class ChatResponseList {
     String name;
-    String year;
+    String star;
     String describe;
 }
