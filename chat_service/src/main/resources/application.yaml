@@ -5,6 +5,19 @@ spring:
   application:
     name: chat-service
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chatservice_db
+    username: postgres
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
@@ -13,6 +26,11 @@ spring:
         completions-path: /v1beta/openai/chat/completions
         options:
               model: gemini-2.0-flash
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
 
 logging:
   level:

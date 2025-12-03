@@ -8,6 +8,10 @@ import com.thesis.chat_service.dto.response.ChatResponse;
 import com.thesis.chat_service.dto.response.ChatResponseList;
 import com.thesis.chat_service.repository.httpClient.HotelClient;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -15,7 +19,9 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
+
 import java.util.UUID;
 
 @Service
@@ -26,14 +32,26 @@ public class ChatService {
 
     private final BookingAgentTools bookingAgentTools;
 
+    private final JdbcChatMemoryRepository jdbcChatMemoryRepository;
+
     public ChatService(
             ChatClient.Builder chatClientBuilder,
             HotelClient hotelClient,
-            BookingAgentTools bookingAgentTools
+            BookingAgentTools bookingAgentTools,
+            JdbcChatMemoryRepository jdbcChatMemoryRepository
     ) {
-        this.chatClient = chatClientBuilder.build();
         this.hotelClient = hotelClient;
         this.bookingAgentTools = bookingAgentTools;
+        this.jdbcChatMemoryRepository = jdbcChatMemoryRepository;
+
+        ChatMemory chatMemory = MessageWindowChatMemory.builder()
+                .chatMemoryRepository(jdbcChatMemoryRepository)
+                .maxMessages(20)
+                .build();
+
+        this.chatClient = chatClientBuilder
+                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                .build();
     }
 
     public String test (ChatRequest request){
@@ -53,7 +71,8 @@ public class ChatService {
                 });
     }
 
-    public String hotelAI(ChatRequest request){
+    public String hotelAI(ChatRequest request) {
+        String conversationId = "con4";
         SystemMessage systemMessage = new SystemMessage("""
                 You are an expert hotel reservation agent.
                 Your FIRST ACTION must be calling the tool: getAvailability.
@@ -64,6 +83,7 @@ public class ChatService {
         return chatClient
                 .prompt(prompt)
                 .tools(bookingAgentTools)
+                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,conversationId))
                 .call()
                 .content();
     }
@@ -97,8 +117,4 @@ public class ChatService {
                 .entity(new ParameterizedTypeReference<ChatResponse>() {
                 });
     }
-//
-//    public List<ChatResponseList> filterHotels(ChatRequest request){
-//
-//    }
 }
