@@ -11,7 +11,7 @@ public class HotelSpecification {
         return (root, query, cb) ->
                 city == null ? null : cb.equal(root.get("city"), city);
     }
-
+    
     public static Specification<Hotel> hasRating(Integer rating) {
         return (root, query, cb) ->
                 rating == null ? null : cb.greaterThanOrEqualTo(root.get("rating"), rating);

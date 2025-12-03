@@ -1,4 +1,4 @@
-package com.thesis.chat_service.dto.request;
+package com.thesis.booking_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;

@@ -45,4 +45,20 @@ public class RoomAvailableService {
             );
         }
     }
+
+    public Integer availableRooms(UUID roomTypeId, LocalDate checkIn, LocalDate checkOut, int quantityBooking) {
+        RoomTypeResponse roomInfo = hotelClient.getRoomTypeResponse(roomTypeId);
+        int totalRoomsOfType = roomInfo.getTotal_rooms();
+
+        List<String> statuses = List.of(BookingStatus.PENDING.name(), BookingStatus.CONFIRMED.name());
+        Integer maxBooked = bookingRepository.
+                findMaxBookedQuantityForRoomTypeInDateRange(roomTypeId, checkIn, checkOut, statuses);
+
+        if (maxBooked == null) {
+            maxBooked = 0;
+        }
+
+        int availableRooms = totalRoomsOfType - maxBooked;
+        return availableRooms;
+    }
 }

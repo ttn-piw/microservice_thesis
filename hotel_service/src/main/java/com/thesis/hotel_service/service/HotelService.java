@@ -2,10 +2,7 @@ package com.thesis.hotel_service.service;
 
 import com.thesis.hotel_service.dto.request.HotelUpdateRequest;
 import com.thesis.hotel_service.dto.request.NewHotelRequest;
-import com.thesis.hotel_service.dto.response.ApiResponse;
-import com.thesis.hotel_service.dto.response.HotelMainPageResponse;
-import com.thesis.hotel_service.dto.response.HotelResponse;
-import com.thesis.hotel_service.dto.response.RoomAvailabilityResponse;
+import com.thesis.hotel_service.dto.response.*;
 import com.thesis.hotel_service.mapper.HotelMapper;
 import com.thesis.hotel_service.model.Hotel;
 import com.thesis.hotel_service.model.Room_type;
@@ -310,6 +307,15 @@ public class HotelService {
                 .code(82200)
                 .message("Availability rooms: ")
                 .data(resultList)
+                .build();
+    }
+
+    public ApiResponse searchForChat(String city, String name){
+        List<RoomTypeChatbotResponse> roomTypesList =  roomTypeRepository.findRoomTypesByCityAndName(city, name);
+        log.info("Room chatbot list: {}", roomTypesList);
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .data(roomTypesList)
                 .build();
     }
 }

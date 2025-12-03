@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 public class AvailabilityRoomRequest {
     @JsonProperty(required = true) String roomTypeName;
     @JsonProperty(required = true) String city;
-    @JsonProperty(required = true) String checkInDate;
-    @JsonProperty(required = true) String checkOutDate;
+    @JsonProperty(required = true) LocalDate checkInDate;
+    @JsonProperty(required = true) LocalDate checkOutDate;
     @JsonProperty(required = true) int quantity;
 }

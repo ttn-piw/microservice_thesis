@@ -1,6 +1,7 @@
 package com.thesis.hotel_service.repository;
 
 import com.thesis.hotel_service.model.Hotel;
+import com.thesis.hotel_service.model.Room_type;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

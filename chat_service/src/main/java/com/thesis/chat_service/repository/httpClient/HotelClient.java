@@ -1,9 +1,11 @@
 package com.thesis.chat_service.repository.httpClient;
 
 import com.thesis.chat_service.dto.response.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
@@ -18,4 +20,7 @@ public interface HotelClient {
     @GetMapping("roomTypes/{id}")
     ApiResponse getRoomType(@PathVariable("id") UUID id);
 
+    @GetMapping("hotels/searchTool")
+    ApiResponse searchForChat(@RequestParam(required = false) String city,
+                              @RequestParam(required = false) String roomType);
 }

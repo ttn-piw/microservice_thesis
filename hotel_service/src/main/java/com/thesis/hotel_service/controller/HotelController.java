@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -162,5 +163,13 @@ public class HotelController {
     public String getHotelSnapshot(@PathVariable("hotelId") UUID hotelId){
         String hotelNameSnapshot = hotelService.getHotelNameSnapshot(hotelId);
         return hotelNameSnapshot;
+    }
+
+    @GetMapping("/searchTool")
+    public ApiResponse<List<Map<String, Object>>> searchForChat(HttpServletRequest request,
+                                                   @RequestParam(required = false) String city,
+                                                   @RequestParam(required = false) String roomType){
+        ApiResponse response = hotelService.searchForChat(city, roomType);
+        return response;
     }
 }

@@ -1,5 +1,6 @@
 package com.thesis.booking_service.controller;
 
+import com.thesis.booking_service.dto.request.AvailabilityRoomRequest;
 import com.thesis.booking_service.dto.request.CreateBookingRequest;
 import com.thesis.booking_service.dto.response.ApiResponse;
 import com.thesis.booking_service.dto.response.BookingUserResponse;
@@ -24,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
@@ -31,6 +33,9 @@ import java.util.UUID;
 public class BookingController {
     @Autowired
     BookingService bookingService;
+
+    @Autowired
+    RoomAvailableService roomAvailableService;
 
     @Autowired
     hotelClient hotelClient;
@@ -41,8 +46,8 @@ public class BookingController {
     @Autowired
     authClient authClient;
 
-    @Autowired
-    RoomAvailableService roomAvailableService;
+//    @Autowired
+//    RoomAvailableService roomAvailableService;
 
     Logger log = LoggerFactory.getLogger(BookingController.class);
 
@@ -210,5 +215,18 @@ public class BookingController {
         ApiResponse response = bookingService.deleteBooking(id);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
+    }
+
+//    API CALL FROM OTHER SERVICE
+    @GetMapping("/api/availability/check")
+    Integer checkRoomAvailability(
+            @RequestParam UUID roomTypeId,
+            @RequestParam LocalDate checkIn,
+            @RequestParam LocalDate checkOut,
+            @RequestParam int quantityBooking
+    ){
+        Integer availableRooms =  roomAvailableService.availableRooms(roomTypeId, checkIn, checkOut,quantityBooking);
+        log.info("ID: {} with available rooms: {}",roomTypeId,availableRooms);
+        return availableRooms;
     }
 }

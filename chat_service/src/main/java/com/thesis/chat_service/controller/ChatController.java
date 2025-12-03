@@ -4,11 +4,13 @@ import com.thesis.chat_service.dto.request.ChatRequest;
 import com.thesis.chat_service.dto.response.ApiResponse;
 import com.thesis.chat_service.dto.response.ChatResponse;
 import com.thesis.chat_service.dto.response.ChatResponseList;
+import com.thesis.chat_service.repository.httpClient.HotelClient;
 import com.thesis.chat_service.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -16,9 +18,14 @@ public class ChatController {
     @Autowired
     ChatService chatService;
 
-    @PostMapping("/testChat")
-    public String chatNormal(@RequestBody ChatRequest request){
-        return chatService.test(request);
+    @Autowired
+    HotelClient hotelClient;
+
+
+    @GetMapping("/testHotelClient")
+    public ApiResponse<List<Map<String, Object>>> chatNormal(@RequestParam(required = false) String city,
+                                                             @RequestParam(required = false) String roomType){
+        return hotelClient.searchForChat(city,roomType);
     }
     @GetMapping("/callToHotel/{id}")
     public ChatResponse callToHotelService(@PathVariable("id") UUID id, @RequestBody ChatRequest request){
