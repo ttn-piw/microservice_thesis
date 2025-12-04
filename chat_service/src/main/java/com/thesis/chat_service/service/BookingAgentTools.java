@@ -8,7 +8,6 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -114,17 +113,24 @@ public class BookingAgentTools {
                     .guests(List.of(guestReq))
                     .build();
 
-            var bookingId = bookingClient.createBooking(bookingRequest);
+            ApiResponse response = bookingClient.createBooking(bookingRequest);
+            String message = response.getMessage();
+            UUID bookingId = UUID.fromString(message);
 
-            UUID Id = UUID.fromString(bookingId.getData().toString());
-//            var booking = bookingClient.getBookingById(Id).getData();
-//            log.info("BookingId: {}", booking);
+            var booking = bookingClient.getBookingById(bookingId).getData();
+            log.info("Booking: {}", booking);
 
-            return String.format("SUCCESS: Booking successfully created! for %s at %s. Your booking is %s. Please check your booked page for more detail",
-                    request.getCustomerName(), request.getHotelName(), Id);
+            bookingClient.sendEmail(bookingId);
 
+            return String.format("SUCCESS: Booking successfully created! for %s at %s. Please check your booked page for more detail",
+                    request.getCustomerName(), request.getHotelName());
+
+        } catch (FeignException e) {
+            log.error("Feign error", e);
+            return "ERROR: Unable to contact hotel/booking services.";
         } catch (Exception e) {
-            return "ERROR: Internal error during booking.";
+            log.error("Internal error", e);
+            return "ERROR: Internal error when booking.";
         }
     }
 }

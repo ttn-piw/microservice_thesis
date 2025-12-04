@@ -5,10 +5,7 @@ import com.thesis.booking_service.dto.request.GuestBookingRequest;
 import com.thesis.booking_service.dto.request.RoomTypeBookingRequest;
 import com.thesis.booking_service.dto.response.*;
 import com.thesis.booking_service.exception.ErrorCode;
-import com.thesis.booking_service.mapper.BookedRoomTypeMapper;
-import com.thesis.booking_service.mapper.BookingGuestMapper;
-import com.thesis.booking_service.mapper.BookingStatus;
-import com.thesis.booking_service.mapper.PaymentStatusType;
+import com.thesis.booking_service.mapper.*;
 import com.thesis.booking_service.model.BookedRoomType;
 import com.thesis.booking_service.model.Booking;
 import com.thesis.booking_service.model.BookingGuest;
@@ -44,6 +41,9 @@ public class BookingService {
 
     @Autowired
     BookingGuestRepository bookingGuest;
+
+    @Autowired
+    BookingMapper bookingMapper;
 
     @Autowired
     BookedRoomTypeMapper bookedRoomTypeMapper;
@@ -82,7 +82,7 @@ public class BookingService {
         return ApiResponse.builder()
                 .code(HttpStatus.OK.value())
                 .message("SUCCESSFUL")
-                .data(bookingRepository.findBookingById(bookingId))
+                .data(bookingMapper.toBookingResponse(bookingRepository.findBookingById(bookingId)))
                 .build();
     }
 //    public ApiResponse getBookingByUserId(UUID userId) {
@@ -244,7 +244,7 @@ public class BookingService {
 
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())
-                    .message(String.format("SUCCESSFUL: Your booking ID: %s", booking.getId()))
+                    .message(booking.getId().toString())
                     .data(response)
                     .build();
     }

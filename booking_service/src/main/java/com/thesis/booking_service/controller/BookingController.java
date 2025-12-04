@@ -136,6 +136,7 @@ public class BookingController {
         var email = contextHolder.getName();
 
         log.info("Email: {}", email);
+        log.info("Booking info: {}", bookingRequest);
 
         ApiResponse response = bookingService.bookingRoom(bookingRequest, email);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;

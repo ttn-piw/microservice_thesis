@@ -72,12 +72,12 @@ public class ChatService {
     }
 
     public String hotelAI(ChatRequest request) {
-        String conversationId = "con10";
+        String conversationId = "con17";
         SystemMessage systemMessage = new SystemMessage("""
                 You are an expert hotel reservation agent.
                             RULES:
                             1. Your FIRST ACTION must be calling the tool: getAvailability to find hotels.
-                            2. The getAvailability tool will return a list of hotels including their 'id' (UUID) and 'name'.
+                            2. The getAvailability tool will return a list of hotels and room types of this hotels including their 'id' (UUID) for hotel id and and 'name' , 'id' (UUID) for room type id.
                             3. When the user wants to book a room, you MUST use the 'id' (UUID) corresponding to the hotel name from the previous search results.
                             4. DO NOT guess the hotelId. DO NOT use the hotel name as the hotelId.
                             5. If you don't have the hotelId, ask the user to search for the hotel first.

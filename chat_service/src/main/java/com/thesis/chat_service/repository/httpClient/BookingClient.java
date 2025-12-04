@@ -28,4 +28,7 @@ public interface BookingClient {
 
     @GetMapping("/{id}")
     ApiResponse getBookingById(@PathVariable("id")UUID bookingId);
+
+    @PostMapping("/email/chatbot/{bookingId}")
+    void sendEmail(@PathVariable UUID bookingId);
 }
