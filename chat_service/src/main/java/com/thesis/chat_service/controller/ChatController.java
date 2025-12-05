@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1/chats")
 public class ChatController {
     @Autowired
     ChatService chatService;

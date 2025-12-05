@@ -7,6 +7,7 @@ import com.thesis.chat_service.dto.response.ApiResponse;
 import com.thesis.chat_service.dto.response.ChatResponse;
 import com.thesis.chat_service.dto.response.ChatResponseList;
 import com.thesis.chat_service.repository.httpClient.HotelClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ChatService {
     private final ChatClient chatClient;
@@ -72,7 +74,16 @@ public class ChatService {
     }
 
     public String hotelAI(ChatRequest request) {
-        String conversationId = "con17";
+        String conversationId = "conversation1";
+//        log.info("Request: {}", request);
+//
+//        String conversationId = request.getSessionId();
+//        if (conversationId == null) {
+//            conversationId = "chat_" + randomId.substring(0,10);
+//            request.setSessionId(conversationId);
+//        }
+//        log.info("ConversationId: {}", conversationId);
+
         SystemMessage systemMessage = new SystemMessage("""
                 You are an expert hotel reservation agent.
                             RULES:
@@ -84,10 +95,11 @@ public class ChatService {
                 """);
         UserMessage userMessage = new UserMessage(request.getMessage());
         Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
+        String finalConversationId = conversationId;
         return chatClient
                 .prompt(prompt)
                 .tools(bookingAgentTools)
-                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,conversationId))
+                .advisors(a->a.param(ChatMemory.CONVERSATION_ID, finalConversationId))
                 .call()
                 .content();
     }
