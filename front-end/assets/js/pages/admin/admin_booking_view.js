@@ -56,12 +56,12 @@ function renderBookingTable(bookings) {
         }[booking.status] || 'bg-gray-100 text-gray-700';
 
         row.insertCell().innerHTML = `
-            <code class="bg-gray-100 p-1 rounded text-xs block mb-1">${booking.id.substring(0, 8)}...</code>
+            <code class="p-1 rounded text-xs block mb-1">${booking.id}</code>
             <strong>${booking.hotel_name_snapshot}</strong>
         `;
         row.insertCell().innerHTML = `
-            <span class="block">In: ${formatDate(booking.check_in_date)}</span>
-            <span class="block">Out: ${formatDate(booking.check_out_date)}</span>
+            <span class="block">${formatDate(booking.check_in_date)}</span>
+            <span class="block">${formatDate(booking.check_out_date)}</span>
         `;
         row.insertCell().innerHTML = `<strong>${booking.total_price.toLocaleString('vi-VN')} VND</strong>`;
         
@@ -71,7 +71,7 @@ function renderBookingTable(bookings) {
         actionCell.className = 'px-4 py-3 whitespace-nowrap space-x-2';
         
         if (booking.status === 'CONFIRMED' || booking.status === 'PENDING') {
-             const cancelBtn = document.createElement('button');
+            const cancelBtn = document.createElement('button');
             cancelBtn.innerHTML = '<i class="ri-close-circle-line"></i> Cancel';
             cancelBtn.className = 'text-xs text-red-600 hover:text-red-900 font-semibold p-1 rounded border border-red-200 hover:bg-red-50';
             cancelBtn.onclick = () => handleCancelBooking(booking.id);

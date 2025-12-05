@@ -1,5 +1,5 @@
 const EMAIL_API_ENDPOINT = 'http://localhost:8888/api/v1/bookings/email/send';
-const MY_BOOKING_URL_BASE = '127.0.0.1/pages/booked.html';
+const MY_BOOKING_URL_BASE = 'http://127.0.0.1:5500/pages/booked.html';
 
 const EMAIL_TEMPLATE_HTML = `
 <!DOCTYPE html>

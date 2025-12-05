@@ -9,7 +9,7 @@ export function parseJwt(token) {
 
         return JSON.parse(jsonPayload);
     } catch (e) {
-        console.error("Lỗi giải mã token:", e);
+        console.error("Can not decode token:", e);
         return null;
     }
 }

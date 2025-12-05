@@ -71,6 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logoutButton').addEventListener('click', () => {
         localStorage.removeItem('Bearer');
         alert('Logging out...');
-        window.location.href = 'login-page.html';
+        window.location.href = 'login.html';
     });
 });
