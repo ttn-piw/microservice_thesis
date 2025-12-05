@@ -22,6 +22,7 @@
 		<module>hotel_service</module>
 		<module>booking_service</module>
 		<module>chat_service</module>
+		<module>review_service</module>
 	</modules>
 
 	<properties>

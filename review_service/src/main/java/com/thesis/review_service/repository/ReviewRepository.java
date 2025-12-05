@@ -1,4 +1,8 @@
 package com.thesis.review_service.repository;
 
-public class ReviewRepository {
+import com.thesis.review_service.document.Review;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface ReviewRepository extends MongoRepository<Review, String> {
+
 }

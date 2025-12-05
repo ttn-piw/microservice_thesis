@@ -1,0 +1,12 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: user_service
+
+  data:
+    mongodb:
+      uri: mongodb://mongo:mongo@localhost:27017/admin
+
+
