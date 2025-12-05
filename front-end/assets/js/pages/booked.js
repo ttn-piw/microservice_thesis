@@ -1,4 +1,5 @@
 import { getMyBookings } from '../api/bookingService.js';
+import { createReview } from '../api/reviewService.js'; 
 
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
@@ -22,6 +23,75 @@ function calculateNights(checkIn, checkOut) {
     }
 }
 
+let currentRating = 0;
+
+window.openReviewModal = function(hotelId, hotelName) {
+    document.getElementById('reviewModal').classList.remove('hidden');
+    document.getElementById('modalHotelName').innerText = `Review: ${hotelName}`;
+    document.getElementById('reviewHotelId').value = hotelId;
+    currentRating = 0;
+    document.getElementById('reviewRating').value = 0;
+    document.getElementById('reviewComment').value = '';
+    updateStars(0);
+}
+
+window.closeReviewModal = function() {
+    document.getElementById('reviewModal').classList.add('hidden');
+}
+
+window.setRating = function(rating) {
+    currentRating = rating;
+    document.getElementById('reviewRating').value = rating;
+    updateStars(rating);
+}
+
+function updateStars(rating) {
+    const stars = document.querySelectorAll('.star-btn');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove('text-gray-300');
+            star.classList.add('text-yellow-400');
+        } else {
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-gray-300');
+        }
+    });
+}
+
+window.submitReview = async function() {
+    const hotelId = document.getElementById('reviewHotelId').value;
+    const rating = document.getElementById('reviewRating').value;
+    const comment = document.getElementById('reviewComment').value;
+   
+    const userId = localStorage.getItem('userId') || "c066cbc39-9533-401a-ad40-b3522ee069fb";
+
+    if (rating == 0) {
+        alert("Please select a rating star!");
+        return;
+    }
+
+   const reviewData = {
+        userId: userId,
+        hotelId: hotelId,
+        rating: parseInt(rating),
+        comment: comment
+    };
+
+    try {
+       const result = await createReview(reviewData);
+
+        if (result.code === 200) {
+            alert("Review submitted successfully!");
+            closeReviewModal();
+        } else {
+            alert("Failed to submit review: " + (result.message || "Unknown error"));
+        }
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Error connecting to server.");
+    }
+}
+
 function renderBookings(bookings) {
     const container = document.getElementById('bookingsList');
     const messageBox = document.getElementById('messageContainer');
@@ -35,11 +105,26 @@ function renderBookings(bookings) {
         return;
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     bookings.forEach(booking => {
         const isConfirmed = booking.status === 'CONFIRMED';
         const statusClass = isConfirmed ? 'bg-green-100 text-green-700 border-green-500' : 'bg-yellow-100 text-yellow-700 border-yellow-500';
         const nights = calculateNights(booking.check_in_date, booking.check_out_date);
+
+        const checkOutDate = new Date(booking.check_out_date);
+        const canReview = isConfirmed && (today > checkOutDate);
         
+        // Review button
+        const reviewButtonHtml = canReview 
+            ? `<button onclick="openReviewModal('${booking.hotel_id}', '${booking.hotel_name_snapshot}')" 
+                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 flex justify-center items-center">
+                Write a Review
+               </button>`
+            : '';
+        
+        // Booking card
         const card = document.createElement('div');
         card.className = 'booking-card bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 space-y-4';
 
@@ -104,6 +189,7 @@ function renderBookings(bookings) {
                 <p><span class="font-semibold">Primary Guest:</span> ${guestName} (<a href="mailto:${booking.userEmail}" class="text-agoda hover:underline">${booking.userEmail}</a>)</p>
                 <p><span class="font-semibold">Requests:</span> <span class="text-gray-500">${booking.special_requests || 'None'}</span></p>
             </div>
+            ${reviewButtonHtml}
         `;
         container.appendChild(card);
     });
