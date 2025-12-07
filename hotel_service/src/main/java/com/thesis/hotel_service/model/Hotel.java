@@ -26,6 +26,9 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    @Column(name = "owner_id")
+    UUID ownerId;
+
     @Column(name = "name", nullable = false)
     @NotEmpty(message = "Hotel's name is required")
     String name;

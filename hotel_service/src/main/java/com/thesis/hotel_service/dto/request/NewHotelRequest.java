@@ -8,11 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewHotelRequest {
+    String owner_email;
+
     @Column(name = "name", nullable = false)
     @NotEmpty(message = "Hotel's name is required")
     String name;

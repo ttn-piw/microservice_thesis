@@ -66,6 +66,18 @@ public class HotelController {
         return ResponseEntity.status(status).body(response);
     }
 
+    @GetMapping("/owner/")
+    public ResponseEntity<ApiResponse> getHotelByOwnerId(HttpServletRequest request ,
+                                                         @RequestParam(required = true) String email){
+        String path = request.getMethod() + " " + request.getRequestURI() + "/" + email ;
+
+        log.info(path);
+
+        ApiResponse response = hotelService.getHotelByOwnerId(email);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+
     @GetMapping("/{uuid}")
     public ResponseEntity<ApiResponse> getHotelById(HttpServletRequest request ,@PathVariable(value = "uuid")UUID uuid){
         String path = request.getMethod() + " " + request.getRequestURI() + "/" + uuid ;

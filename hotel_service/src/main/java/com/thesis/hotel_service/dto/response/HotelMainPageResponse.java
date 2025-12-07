@@ -17,6 +17,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HotelMainPageResponse {
     UUID id;
+    UUID ownerId;
     String name;
     String description;
     Integer star_rating;

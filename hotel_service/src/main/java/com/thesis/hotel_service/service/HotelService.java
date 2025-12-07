@@ -9,6 +9,7 @@ import com.thesis.hotel_service.model.Room_type;
 import com.thesis.hotel_service.repository.HotelRepository;
 import com.thesis.hotel_service.repository.RoomRepository;
 import com.thesis.hotel_service.repository.RoomTypeRepository;
+import com.thesis.hotel_service.repository.httpClient.AuthClient;
 import com.thesis.hotel_service.repository.httpClient.bookingClient;
 import com.thesis.hotel_service.repository.spec.HotelSpecification;
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ public class HotelService {
 
     @Autowired
     bookingClient bookingClient;
+
+    @Autowired
+    AuthClient authClient;
 
     Logger log = LoggerFactory.getLogger(HotelService.class);
     @Autowired
@@ -91,6 +95,23 @@ public class HotelService {
         }
     }
 
+    public ApiResponse getHotelByOwnerId(String email){
+        UUID uuid = UUID.fromString(authClient.getUserId(email));
+
+        if (hotelRepository.findHotelByOwnerId(uuid) == null)
+            return ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message(String.format("FAIL: Hotel with %s not found", uuid.toString()))
+                    .data(null)
+                    .build();
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message("SUCCESSFUL")
+                .data(hotelRepository.findHotelByOwnerId(uuid))
+                .build();
+    }
+
     public ApiResponse getHotelById(UUID uuid){
         if (hotelRepository.findHotelById(uuid) == null)
             return ApiResponse.builder()
@@ -137,6 +158,7 @@ public class HotelService {
 
         log.info(hotelRequest.toString());
 
+        UUID uuid = UUID.fromString(authClient.getUserId(hotelRequest.getOwner_email()));
         //Saving new hotel
         Hotel newHotel = new Hotel();
         newHotel.setName(hotelRequest.getName());
@@ -149,6 +171,7 @@ public class HotelService {
         newHotel.setCountry(hotelRequest.getCountry());
         newHotel.setPhone_number(hotelRequest.getPhone_number());
         newHotel.setEmail(hotelRequest.getEmail());
+        newHotel.setOwnerId(uuid);
 
         //Handle to save datetime format
         OffsetDateTime getCurrentTime = OffsetDateTime.now();

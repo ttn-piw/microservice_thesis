@@ -1,7 +1,10 @@
-import { getAllHotelsAdmin, deleteHotelById } from '../../api/hotelServiceAdmin.js';
+import { getAllHotelsAdminByOwner, deleteHotelById } from '../../api/hotelServiceAdmin.js';
 import { showCreateHotelModal, showEditHotelModal, showRoomTypeModal } from './admin_modal_utils.js';
+import { parseJwt } from '../../utils/jwtUtils.js';
 
 const HOTEL_TABLE_BODY_ID = 'hotelTableBody';
+const ownerEmail = parseJwt(localStorage.getItem('Bearer')).sub;
+
 let hotelDataCache = [];
 let currentSort = { field: 'created_at', direction: 'desc' };
 
@@ -167,7 +170,7 @@ export async function loadHotelDataAndRender() {
     if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Loading data...</td></tr>';
     
     try {
-        const hotels = await getAllHotelsAdmin();
+        const hotels = await getAllHotelsAdminByOwner(ownerEmail);
         hotelDataCache = hotels;
         if (messageBox) messageBox.classList.add('hidden');
         setupSorting(); 

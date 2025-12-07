@@ -11,10 +11,10 @@ function getToken() {
     return token;
 }
 
-export async function getAllHotelsAdmin() {
+export async function getAllHotelsAdminByOwner(email) {
     try {
         const token = getToken();
-        const response = await fetch(`${BASE_URL}/getAll`, {
+        const response = await fetch(`${BASE_URL}/owner/?email=${email}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

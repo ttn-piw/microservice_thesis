@@ -3,6 +3,9 @@ import { getHotelById, updateHotelInfo, createNewHotel, uploadHotelImage, getRoo
 from '../../api/hotelServiceAdmin.js';
 
 import { loadHotelDataAndRender, handleDeleteClick as reloadHotelList } from '../admin/admin_hotel_view.js'; 
+import { parseJwt } from '../../utils/jwtUtils.js'; 
+
+const ownerEmail = parseJwt(localStorage.getItem('Bearer')).sub;
 const MODAL_CONTAINER_ID = 'createHotelModalContainer';
 const ROOM_TYPE_MODAL_CONTAINER_ID = 'roomTypeModalContainer'; 
 const IMAGE_BASE_URL = 'http://localhost:8888/uploads';
@@ -28,6 +31,7 @@ export function showCreateHotelModal() {
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 z-40 flex items-center justify-center p-4" id="modalOverlay">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto transform transition-all duration-300">
                 <form id="createHotelForm" class="p-6">
+                    <input type="hidden" name="owner_email" value="${ownerEmail}">
                     <div class="flex justify-between items-center border-b pb-3 mb-4">
                         <h3 class="text-2xl font-bold text-gray-800">Add new hotel</h3>
                         <button type="button" class="text-gray-400 hover:text-gray-600 text-3xl" id="closeModalButton">&times;</button>
@@ -87,7 +91,8 @@ async function handleCreateHotelSubmit(event) {
         address_line: form.address_line.value, city: form.city.value, country: form.country.value,
         postal_code: form.postal_code ? form.postal_code.value : null, state_province: form.state_province ? form.state_province.value : null,
         phone_number: form.phone_number ? form.phone_number.value : null, email: form.email.value,
-        check_in_time: form.check_in_time.value, check_out_time: form.check_out_time.value
+        check_in_time: form.check_in_time.value, check_out_time: form.check_out_time.value,
+        owner_email: ownerEmail
     };
 
     try {
