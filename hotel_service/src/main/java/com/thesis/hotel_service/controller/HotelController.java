@@ -30,6 +30,11 @@ public class HotelController {
 
     Logger log = LoggerFactory.getLogger(HotelController.class);
 
+    @GetMapping("/popular")
+    public List<UUID> getPopularHotels() {
+        return bookingClient.getPopularHotels();
+    }
+
     @GetMapping("/bookedRoom")
     Map<UUID, Integer> getBookedRoom(@RequestParam(required = true) UUID hotelId,
                                   @RequestParam(required = true) LocalDate checkIn,

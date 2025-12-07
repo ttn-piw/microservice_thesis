@@ -375,4 +375,8 @@ public class BookingService {
                         BookedCountResponse::getBookedCount
                 ));
     }
+
+    public List<UUID> getPopularHotels(){
+        return bookingRepository.getPopularHotelsID();
+    }
 }

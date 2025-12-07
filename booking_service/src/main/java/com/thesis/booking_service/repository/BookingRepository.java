@@ -63,4 +63,12 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query(value =
+            "SELECT b.hotel_id " +
+                    "FROM bookings b " +
+                    "GROUP BY b.hotel_id " +
+                    "ORDER BY COUNT(b.hotel_id) DESC",
+            nativeQuery = true)
+    List<UUID> getPopularHotelsID();
 }

@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,9 +53,17 @@ public class HotelService {
     private RoomTypeRepository roomTypeRepository;
 
     public ApiResponse getAllHotelsMainPage(){
-        Pageable limit = PageRequest.of(0, 6);
         try {
-            List<Hotel> hotelList = hotelRepository.findAll(limit).getContent();
+            List<UUID> popularHotelsId = bookingClient.getPopularHotels();
+            List<Hotel> hotelList = new ArrayList<>();
+
+            for (UUID uuid : popularHotelsId) {
+                Hotel hotel = hotelRepository.findHotelById(uuid);
+                if (hotel != null) {
+                    hotelList.add(hotel);
+                }
+            }
+
             List<HotelMainPageResponse> response = hotelList
                     .stream()
                     .map(hotelMapper::toHotelMainPage)
@@ -65,7 +74,9 @@ public class HotelService {
                     .message("SUCCESS: Response data of hotels")
                     .data(response)
                     .build();
-        } catch(Exception e){
+
+        } catch (Exception e) {
+
             return ApiResponse.builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .message(e.getMessage())
