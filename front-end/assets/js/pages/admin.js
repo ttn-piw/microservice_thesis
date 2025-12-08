@@ -1,6 +1,7 @@
 import { parseJwt } from '../utils/jwtUtils.js'; 
 import { renderHotelView, loadHotelDataAndRender } from '../pages/admin/admin_hotel_view.js'; 
 import { loadBookingsDashboard } from '../pages/admin/admin_booking_view.js';
+import { loadOwnerReviewDashboard } from '../pages/admin/admin_review_view.js';
 
 const ADMIN_EMAIL_DISPLAY_ID = 'adminEmailDisplay';
 const ADMIN_CONTENT_AREA_ID = 'adminContentArea'; 
@@ -37,6 +38,9 @@ function renderAdminContent() {
     } else if (currentView === 'bookings') {
         contentArea.innerHTML = `<div id="tabContent"></div>`;
         loadBookingsDashboard(document.getElementById('tabContent'));
+    } else if (currentView === 'reviews') {
+        contentArea.innerHTML = `<div id="tabContent"></div>`;
+        loadOwnerReviewDashboard(document.getElementById('tabContent'));
     }
 }
 

@@ -1,5 +1,6 @@
 import { getMyBookings } from '../api/bookingService.js';
 import { createReview } from '../api/reviewService.js'; 
+import { parseJwt } from '../utils/jwtUtils.js';    
 
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
@@ -211,7 +212,14 @@ async function loadMyBookings() {
         return;
     }
 
-    messageBox.textContent = "Loading your bookings...";
+    const userEmail = parseJwt(token).sub;
+    
+    // const [bookingRes, reviewRes] = await Promise.all([
+    //         getMyBookings(),
+    //         getUserReviews(userEmail)
+    //     ]);
+
+    // messageBox.textContent = "Loading your bookings...";
     messageBox.classList.remove('hidden');
     messageBox.className = 'p-4 bg-blue-100 text-blue-700 rounded-lg font-medium';
     container.innerHTML = '';

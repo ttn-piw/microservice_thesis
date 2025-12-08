@@ -145,7 +145,7 @@ async function handleBookingSubmit(sessionData) {
 
         if (response.ok) {
             const result = await response.json();
-            alert("Booking Successful! Booking ID: " + (result.data || "Confimed"));
+            alert("Booking Successful! Booking ID: " );
             console.log("Booking successful:", result.data);
 
             const bookingId = result.data?.id || result.id || result.data;

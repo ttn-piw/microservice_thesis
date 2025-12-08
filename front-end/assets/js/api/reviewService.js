@@ -1,5 +1,16 @@
 const REVIEW_API_URL = 'http://localhost:8888/api/v1/reviews'; 
 
+export const getUserReviews = async (userEmail) => {
+    const response = await fetch(`${REVIEW_API_URL}/user/${userEmail}`);
+    const apiResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(apiResponse.message || 'Failed to fetch user reviews');
+    }
+
+    return apiResponse;
+};
+
 export const createReview = async (reviewData) => {
     const token = localStorage.getItem('Bearer'); 
     
