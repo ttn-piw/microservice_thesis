@@ -32,12 +32,34 @@ public class ReviewController {
         return reviewService.getAllReviews();
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse> getReviewsByUser(HttpServletRequest request,@PathVariable String userId) {
+        String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
+        log.info(path);
+
+        ApiResponse reviews = reviewService.getReviewsByUserId(userId);
+        HttpStatus status = reviews.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(status).body(reviews);
+    }
+
     @PostMapping("/review")
     public ResponseEntity<ApiResponse> postReview(HttpServletRequest request, @RequestBody ReviewRequest body){
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
         ApiResponse response = reviewService.createReview(body);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @GetMapping("/owner")
+    public ResponseEntity<ApiResponse> getOwnerReview(HttpServletRequest request,
+                                                       @RequestParam(required = true) String email){
+        String path = request.getMethod() + " " + request.getRequestURI() + "/" + email ;
+        log.info(path);
+
+        ApiResponse response = reviewService.getAdminOwnerReview(email);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }

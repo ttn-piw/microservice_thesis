@@ -15,7 +15,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReviewResponse {
     String Id;
-    UUID bookingId;
+    String bookingId;
     String userId;
     String hotelId;
     int rating;

@@ -17,7 +17,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReviewRequest {
     @NotBlank
-    UUID bookingId;
+    String bookingId;
 
     @NotBlank
     String userId;

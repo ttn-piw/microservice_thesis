@@ -5,38 +5,113 @@ import com.thesis.review_service.dto.request.ReviewRequest;
 import com.thesis.review_service.dto.response.ApiResponse;
 import com.thesis.review_service.dto.response.ReviewResponse;
 import com.thesis.review_service.repository.ReviewRepository;
+import com.thesis.review_service.repository.httpClient.BookingClient;
+import com.thesis.review_service.repository.httpClient.hotelClient;
+import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 public class ReviewService {
     @Autowired
     ReviewRepository reviewRepository;
+
+    @Autowired
+    BookingClient bookingClient;
+
+    @Autowired
+    hotelClient hotelClient;
 
     public List<Review> getAllReviews(){
         return reviewRepository.findAll();
     }
 
     public ApiResponse createReview(ReviewRequest req) {
+        //Check posted review
+        UUID bookingId = UUID.fromString(req.getBookingId());
+        var bookingResponse = bookingClient.getBookingById(bookingId);
 
-        Review review = Review.builder()
-                .userId(req.getUserId())
-                .hotelId(req.getHotelId())
-                .rating(req.getRating())
-                .comment(req.getComment())
-                .createdAt(LocalDate.now())
-                .updatedAt(LocalDate.now())
-                .build();
+        if (bookingResponse.getData() == null) {
+            throw new RuntimeException("Booking not found");
+        }
 
-        review = reviewRepository.save(review);
+        boolean reviewExists = reviewRepository.existsByBookingId(req.getBookingId());
+
+        if (reviewExists) {
+            return ApiResponse.builder()
+                    .code(400)
+                    .message("You have already reviewed this booking.")
+                    .build();
+        }
+
+        Review newReview = new Review();
+        newReview.setUserId(req.getUserId());
+        newReview.setBookingId(req.getBookingId());
+        newReview.setHotelId(req.getHotelId());
+        newReview.setRating(req.getRating());
+        newReview.setComment(req.getComment());
+        newReview.setCreatedAt(LocalDateTime.now());
+        newReview.setUpdatedAt(LocalDateTime.now());
+
+        Review response = reviewRepository.save(newReview);
 
         return ApiResponse.builder()
                 .code(200)
-                .data(review)
+                .data(response)
                 .message("Post new comment")
                 .build();
+    }
+
+    public ApiResponse getReviewsByUserId(String userId){
+        List<Review> response = reviewRepository.findReviewByUserId(userId);
+
+        if (response.isEmpty())
+            return ApiResponse.builder()
+                    .code(404)
+                    .data(null)
+                    .message("No review founded.")
+                    .build();
+
+        return ApiResponse.builder()
+                .code(200)
+                .data(response)
+                .message("Post new comment")
+                .build();
+    }
+
+    public ApiResponse getAdminOwnerReview(String email){
+
+        try{
+            List<UUID> listHotelId = hotelClient.getHotelIdByOwnerId(email);
+            List<Review> reviewsList = new ArrayList<>();
+
+            listHotelId.forEach(id -> {
+                log.info("Id: {}", id);
+                List<Review> reviews = reviewRepository.findReviewByHotelId(id.toString());
+                reviewsList.addAll(reviews);
+            });
+
+            return ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESSFUL")
+                    .data(reviewsList)
+                    .build();
+
+        } catch (FeignException e){
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
     }
 }
