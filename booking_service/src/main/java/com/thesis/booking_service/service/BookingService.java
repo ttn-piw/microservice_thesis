@@ -15,6 +15,7 @@ import com.thesis.booking_service.repository.BookingRepository;
 import com.thesis.booking_service.repository.httpClient.authClient;
 import com.thesis.booking_service.repository.httpClient.hotelClient;
 import com.thesis.booking_service.repository.httpClient.userClient;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +135,33 @@ public class BookingService {
                 .build();
     }
 
+    public ApiResponse getAdminOwnerBooking(String email){
+
+        try{
+            List<UUID> listHotelId = hotelClient.getHotelIdByOwnerId(email);//Owner_id
+            List<Booking> bookingList = new ArrayList<>();
+
+            listHotelId.forEach(id -> {
+                log.info("Id: {}", id);
+                List<Booking> bookings = bookingRepository.findBookingByHotelId(id);
+                bookingList.addAll(bookings);
+            });
+
+            return ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESSFUL")
+                    .data(bookingList)
+                    .build();
+
+        } catch (FeignException e){
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+    }
+
     public ApiResponse getBookingOfUser(String email){
         List<Booking> getBookings = bookingRepository.findByUserEmail(email);
         if (getBookings.isEmpty())
@@ -175,7 +203,7 @@ public class BookingService {
             booking.setUser_phone(user.getPhone());
 
             String getHotelName = hotelClient.getHotelName(request.getHotelId());
-            booking.setHotel_id(request.getHotelId());
+            booking.setHotelId(request.getHotelId());
             booking.setHotel_name_snapshot(getHotelName);
             booking.setCheck_in_date(request.getCheckInDate());
             booking.setCheck_out_date(request.getCheckOutDate());
@@ -296,7 +324,7 @@ public class BookingService {
         response.setTotalPrice(getBookingInfo.getTotal_price());
         response.setSpecial_requests(getBookingInfo.getSpecial_requests());
         response.setCreated_at(getBookingInfo.getCreated_at());
-        response.setHotel_id(getBookingInfo.getHotel_id());
+        response.setHotel_id(getBookingInfo.getHotelId());
         response.setHotel_name_snapshot(getBookingInfo.getHotel_name_snapshot());
 
         response.setRoomTypes(roomTypes);

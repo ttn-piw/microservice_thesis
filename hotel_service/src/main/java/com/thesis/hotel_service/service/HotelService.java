@@ -123,6 +123,14 @@ public class HotelService {
                 .build();
     }
 
+    public List<UUID> getHotelIdByOwnerId(String email){
+        UUID uuid = UUID.fromString(authClient.getUserId(email));
+
+        List<UUID> listHotelId = hotelRepository.getListHotelId(uuid);
+
+        return listHotelId;
+    }
+
     public ApiResponse getHotelById(UUID uuid){
         if (hotelRepository.findHotelById(uuid) == null)
             return ApiResponse.builder()

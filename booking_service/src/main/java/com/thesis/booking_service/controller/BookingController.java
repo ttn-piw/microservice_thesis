@@ -121,6 +121,16 @@ public class BookingController {
         return ResponseEntity.status(status).body(response);
     }
     //Hotel owner
+    @GetMapping("/owner")
+    public ResponseEntity<ApiResponse> getOwnerBooking(HttpServletRequest request,
+                                                       @RequestParam(required = true) String email){
+        String path = request.getMethod() + " " + request.getRequestURI() + "/" + email ;
+        log.info(path);
+
+        ApiResponse response = bookingService.getAdminOwnerBooking(email);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
     //PATCH /api/v1/bookings/{bookingId}/status
     //POST /api/v1/bookings/{bookingId}/guests
     //PUT /api/v1/bookings/{bookingId}/guests/{guestId}

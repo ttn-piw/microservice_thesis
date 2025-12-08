@@ -38,7 +38,8 @@ public class Booking {
     String user_phone;
 
     @NotNull
-    UUID hotel_id;
+    @Column(name = "hotel_id")
+    UUID hotelId;
 
     @NotBlank
     String hotel_name_snapshot;

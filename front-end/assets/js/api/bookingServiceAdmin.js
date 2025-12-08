@@ -1,4 +1,5 @@
 const BOOKING_API_BASE_URL = 'http://localhost:8888/api/v1/bookings';
+import { parseJwt } from '../utils/jwtUtils.js';
 
 function getToken() {
     const token = localStorage.getItem('Bearer');
@@ -11,7 +12,9 @@ function getToken() {
 export async function getAllBookingsAdmin() {
     try {
         const token = getToken();
-        const response = await fetch(`${BOOKING_API_BASE_URL}/`, {
+        const email = parseJwt(token).sub;
+
+        const response = await fetch(`${BOOKING_API_BASE_URL}/owner?email=${email}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

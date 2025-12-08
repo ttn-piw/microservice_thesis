@@ -82,7 +82,6 @@ public class HotelController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-
     @GetMapping("/{uuid}")
     public ResponseEntity<ApiResponse> getHotelById(HttpServletRequest request ,@PathVariable(value = "uuid")UUID uuid){
         String path = request.getMethod() + " " + request.getRequestURI() + "/" + uuid ;
@@ -189,4 +188,14 @@ public class HotelController {
         ApiResponse response = hotelService.searchForChat(city, roomType);
         return response;
     }
+
+    @GetMapping("/owner/hotelId")
+    public List<UUID> getHotelIdByOwnerId(HttpServletRequest request ,
+                                          @RequestParam(required = true) String email){
+
+        List<UUID> response = hotelService.getHotelIdByOwnerId(email);
+        return response;
+    }
+
 }
+
