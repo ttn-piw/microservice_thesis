@@ -28,7 +28,7 @@ public class BookingResponse {
     String userId;
     String userEmail;
     String user_phone;
-    UUID hotel_id;
+    UUID hotelId;
     String hotel_name_snapshot;
     LocalDate check_in_date;
     LocalDate check_out_date;
