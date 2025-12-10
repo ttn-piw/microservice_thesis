@@ -1,9 +1,8 @@
-package com.thesis.booking_service.dto.response;
+package com.thesis.review_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Builder

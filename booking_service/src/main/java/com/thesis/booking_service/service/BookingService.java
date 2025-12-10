@@ -407,4 +407,52 @@ public class BookingService {
     public List<UUID> getPopularHotels(){
         return bookingRepository.getPopularHotelsID();
     }
+
+    public List<SendToReviewResponse> getBookingByEmailToReview(String email){
+        List<Booking> getAllBookings = bookingRepository.findBookingByUserEmail(email);
+//        log.info("Booking list: {}", getAllBookings);
+
+        return getAllBookings.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    private SendToReviewResponse convertToDto(Booking booking) {
+        // Map Room Type
+        List<BookedRoomTypeDTO> roomDtos = booking.getBookedRoomTypes().stream()
+                .map(room -> BookedRoomTypeDTO.builder()
+                        .room_type_id(room.getRoom_type_id())
+                        .room_type_name_snapshot(room.getRoom_type_name_snapshot())
+                        .quantity(room.getQuantity())
+                        .price_per_night_snapshot(room.getPrice_per_night_snapshot())
+                        .build())
+                .toList();
+
+        // Map Guest
+        List<BookingGuestDTO> guestDtos = booking.getBookingGuests().stream()
+                .map(guest -> BookingGuestDTO.builder()
+                        .full_name(guest.getFull_name())
+                        .email(guest.getEmail())
+                        .is_primary(guest.getIs_primary())
+                        .build())
+                .toList();
+
+        return SendToReviewResponse.builder()
+                .id(booking.getId())
+                .userId(booking.getUserId())
+                .userEmail(booking.getUserEmail())
+                .userPhone(booking.getUser_phone())
+                .hotelId(booking.getHotelId())
+                .hotel_name_snapshot(booking.getHotel_name_snapshot())
+                .check_in_date(booking.getCheck_in_date())
+                .check_out_date(booking.getCheck_out_date())
+                .total_price(booking.getTotal_price())
+                .special_requests(booking.getSpecial_requests())
+                .status(booking.getStatus())
+                .created_at(booking.getCreated_at())
+                .updated_at(booking.getUpdated_at())
+                .paymentStatus(booking.getPaymentStatus())
+                .payment_intent_id(booking.getPayment_intent_id())
+                .bookedRoomTypes(roomDtos)
+                .bookingGuests(guestDtos)
+                .build();
+    }
 }

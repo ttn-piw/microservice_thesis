@@ -1,12 +1,14 @@
 package com.thesis.booking_service.controller;
 
 import com.thesis.booking_service.dto.response.ApiResponse;
+import com.thesis.booking_service.dto.response.SendToReviewResponse;
 import com.thesis.booking_service.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,5 +44,11 @@ public class BookingInternalController {
     @GetMapping("/popular")
     public List<UUID> getPopularHotels() {
         return bookingService.getPopularHotels();
+    }
+
+    @GetMapping("/me")
+    public List<SendToReviewResponse> getBookingByEmailToReview(
+                            @RequestParam(required = true) String email){
+        return bookingService.getBookingByEmailToReview(email);
     }
 }
