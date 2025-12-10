@@ -1,5 +1,5 @@
 import { getMyBookings } from '../api/bookingService.js';
-import { createReview } from '../api/reviewService.js'; 
+import { createReview, getMyBookingsWithReviews } from '../api/reviewService.js'; 
 import { parseJwt } from '../utils/jwtUtils.js';    
 
 function formatDate(dateString) {
@@ -26,10 +26,14 @@ function calculateNights(checkIn, checkOut) {
 
 let currentRating = 0;
 
-window.openReviewModal = function(hotelId, hotelName) {
-    document.getElementById('reviewModal').classList.remove('hidden');
+window.openReviewModal = function(bookingId, hotelId, hotelName) {
+    const modal = document.getElementById('reviewModal');
+    modal.classList.remove('hidden');
+
     document.getElementById('modalHotelName').innerText = `Review: ${hotelName}`;
     document.getElementById('reviewHotelId').value = hotelId;
+    document.getElementById('reviewBookingId').value = bookingId; 
+
     currentRating = 0;
     document.getElementById('reviewRating').value = 0;
     document.getElementById('reviewComment').value = '';
@@ -60,11 +64,13 @@ function updateStars(rating) {
 }
 
 window.submitReview = async function() {
+    const bookingId = document.getElementById('reviewBookingId').value;
     const hotelId = document.getElementById('reviewHotelId').value;
     const rating = document.getElementById('reviewRating').value;
     const comment = document.getElementById('reviewComment').value;
    
-    const userId = localStorage.getItem('userId') || "c066cbc39-9533-401a-ad40-b3522ee069fb";
+    const token = localStorage.getItem('Bearer')
+    const userEmail = parseJwt(token).sub;
 
     if (rating == 0) {
         alert("Please select a rating star!");
@@ -72,7 +78,8 @@ window.submitReview = async function() {
     }
 
    const reviewData = {
-        userId: userId,
+        bookingId: bookingId,
+        email: userEmail,
         hotelId: hotelId,
         rating: parseInt(rating),
         comment: comment
@@ -84,6 +91,7 @@ window.submitReview = async function() {
         if (result.code === 200) {
             alert("Review submitted successfully!");
             closeReviewModal();
+            loadMyBookings();
         } else {
             alert("Failed to submit review: " + (result.message || "Unknown error"));
         }
@@ -93,37 +101,40 @@ window.submitReview = async function() {
     }
 }
 
-function renderBookings(bookings) {
+function renderBookings(bookingsItems) {
     const container = document.getElementById('bookingsList');
     const messageBox = document.getElementById('messageContainer');
     container.innerHTML = '';
     messageBox.classList.add('hidden');
 
-    if (!bookings || bookings.length === 0) {
+    if (!bookingsItems || bookingsItems.length === 0) {
         messageBox.textContent = "You don't have any current or past bookings.";
         messageBox.classList.remove('hidden');
         messageBox.className = 'p-4 bg-yellow-100 text-yellow-700 rounded-lg font-medium';
         return;
     }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    bookings.forEach(booking => {
+    
+    bookingsItems.forEach(item => {
+        const booking = item.bookingResponse; 
+        const apiCanReview = item.canReview;
+        
         const isConfirmed = booking.status === 'CONFIRMED';
         const statusClass = isConfirmed ? 'bg-green-100 text-green-700 border-green-500' : 'bg-yellow-100 text-yellow-700 border-yellow-500';
         const nights = calculateNights(booking.check_in_date, booking.check_out_date);
-
-        const checkOutDate = new Date(booking.check_out_date);
-        const canReview = isConfirmed && (today > checkOutDate);
         
-        // Review button
-        const reviewButtonHtml = canReview 
-            ? `<button onclick="openReviewModal('${booking.hotel_id}', '${booking.hotel_name_snapshot}')" 
+        let reviewButtonHtml = '';
+        if (apiCanReview) {
+
+            reviewButtonHtml = `<button onclick="openReviewModal('${booking.id}', '${booking.hotelId}', '${booking.hotel_name_snapshot}')" 
                 class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 flex justify-center items-center">
                 Write a Review
-               </button>`
-            : '';
+               </button>`;
+        } else if (item.reviewed) {
+            reviewButtonHtml =
+                `<div class="mt-4 w-full bg-gray-100 text-gray-500 font-bold py-2 px-4 rounded flex justify-center items-center border border-gray-300">
+                    You have already reviewed this stay. Thank you!
+                </div>`;
+        }
         
         // Booking card
         const card = document.createElement('div');
@@ -213,20 +224,15 @@ async function loadMyBookings() {
     }
 
     const userEmail = parseJwt(token).sub;
-    
-    // const [bookingRes, reviewRes] = await Promise.all([
-    //         getMyBookings(),
-    //         getUserReviews(userEmail)
-    //     ]);
 
-    // messageBox.textContent = "Loading your bookings...";
+    messageBox.textContent = "Loading your bookings...";
     messageBox.classList.remove('hidden');
     messageBox.className = 'p-4 bg-blue-100 text-blue-700 rounded-lg font-medium';
     container.innerHTML = '';
 
 
     try {
-        const response = await getMyBookings();
+        const response = await getMyBookingsWithReviews(userEmail);
 
         if (response.code === 200 && Array.isArray(response.data)) {
             renderBookings(response.data);

@@ -35,3 +35,23 @@ export const createReview = async (reviewData) => {
 
     return apiResponse;
 };
+
+export const getMyBookingsWithReviews = async (email) => {
+    const token = localStorage.getItem('Bearer');
+    if (!token) throw new Error("Unauthorized");
+
+    const response = await fetch(`${REVIEW_API_URL}/me?email=${email}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const apiResponse = await response.json();
+    if (!response.ok) {
+        throw new Error(apiResponse.message || 'Failed to fetch bookings');
+    }
+
+    return apiResponse;
+};
