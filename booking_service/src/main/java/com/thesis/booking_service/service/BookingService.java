@@ -162,6 +162,42 @@ public class BookingService {
         }
     }
 
+    public ApiResponse<Object> getAdminTotalBookings(String email){
+
+        try{
+            List<UUID> listHotelId = hotelClient.getHotelIdByOwnerId(email);//Owner_id
+            List<Booking> bookingList = new ArrayList<>();
+
+            listHotelId.forEach(id -> {
+                log.info("Id: {}", id);
+                List<Booking> bookings = bookingRepository.findBookingByHotelId(id);
+                bookingList.addAll(bookings);
+            });
+
+            BigDecimal revenue = bookingList.stream()
+                    .map(b -> BigDecimal.valueOf(b.getTotal_price()))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            AdminDashBoardResponse response = AdminDashBoardResponse.builder()
+                    .total_bookings(bookingList.size())
+                    .total_revenue(revenue)
+                    .build();
+
+            return ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESSFUL")
+                    .data(response)
+                    .build();
+
+        } catch (FeignException e){
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage())
+                    .data(null)
+                    .build();
+        }
+    }
+
     public ApiResponse getBookingOfUser(String email){
         List<Booking> getBookings = bookingRepository.findByUserEmail(email);
         if (getBookings.isEmpty())

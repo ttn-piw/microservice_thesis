@@ -241,4 +241,15 @@ public class BookingController {
         log.info("ID: {} with available rooms: {}",roomTypeId,availableRooms);
         return availableRooms;
     }
+//    ADMIN DASHBOARD
+    @GetMapping("/owner/admin")
+    public ResponseEntity<ApiResponse> getTotalAdminOwnerBookings(HttpServletRequest request,
+                                                       @RequestParam(required = true) String email){
+        String path = request.getMethod() + " " + request.getRequestURI() + "/" + email ;
+        log.info(path);
+
+        ApiResponse response = bookingService.getAdminTotalBookings(email);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
 }

@@ -196,6 +196,13 @@ public class HotelController {
         List<UUID> response = hotelService.getHotelIdByOwnerId(email);
         return response;
     }
+//    ADMIN DASHBOARD
+    @GetMapping("/owner/admin")
+    public Integer getHotelsAdminDashboard(HttpServletRequest request ,
+                                          @RequestParam(required = true) String email){
 
+        List<UUID> response = hotelService.getHotelIdByOwnerId(email);
+        return response.size();
+    }
 }
 
