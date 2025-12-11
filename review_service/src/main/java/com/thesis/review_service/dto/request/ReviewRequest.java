@@ -20,7 +20,7 @@ public class ReviewRequest {
     String bookingId;
 
     @NotBlank
-    String userId;
+    String email;
 
     @NotBlank
     String hotelId;

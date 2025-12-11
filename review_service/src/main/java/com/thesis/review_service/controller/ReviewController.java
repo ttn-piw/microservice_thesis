@@ -45,12 +45,11 @@ public class ReviewController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse> getReviewsByUserEmail(HttpServletRequest request,
-                                                             @RequestParam String email,
-                                                             @RequestParam String userId) {
+                                                             @RequestParam String email) {
         String path = request.getMethod() + " " + request.getRequestURI() + request.getQueryString();
         log.info(path);
 
-        ApiResponse reviews = reviewService.getReviewOfMe(email, userId);
+        ApiResponse reviews = reviewService.getReviewOfMe(email);
         HttpStatus status = reviews.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(status).body(reviews);

@@ -7,6 +7,7 @@ import com.thesis.review_service.dto.response.AvailableReviewBookingResponse;
 import com.thesis.review_service.dto.response.BookingResponse;
 import com.thesis.review_service.dto.response.ReviewResponse;
 import com.thesis.review_service.repository.ReviewRepository;
+import com.thesis.review_service.repository.httpClient.AuthClient;
 import com.thesis.review_service.repository.httpClient.BookingClient;
 import com.thesis.review_service.repository.httpClient.hotelClient;
 import feign.FeignException;
@@ -31,11 +32,16 @@ public class ReviewService {
     @Autowired
     hotelClient hotelClient;
 
+    @Autowired
+    AuthClient authClient;
+
     public List<Review> getAllReviews(){
         return reviewRepository.findAll();
     }
 
     public ApiResponse createReview(ReviewRequest req) {
+        log.info("Request: {}", req);
+        String userId = authClient.getUserId(req.getEmail());
         //Check posted review
         UUID bookingId = UUID.fromString(req.getBookingId());
         var bookingResponse = bookingClient.getBookingById(bookingId);
@@ -54,7 +60,7 @@ public class ReviewService {
         }
 
         Review newReview = new Review();
-        newReview.setUserId(req.getUserId());
+        newReview.setUserId(userId);
         newReview.setBookingId(req.getBookingId());
         newReview.setHotelId(req.getHotelId());
         newReview.setRating(req.getRating());
@@ -115,8 +121,10 @@ public class ReviewService {
         }
     }
 
-    public ApiResponse getReviewOfMe(String email, String userId) {
+    public ApiResponse getReviewOfMe(String email) {
         try {
+            String userId = authClient.getUserId(email);
+
             List<BookingResponse> bookingResponses = bookingClient.getBookingByEmailToReview(email);
             List<Review> reviewedBookings = reviewRepository.findReviewByUserId(userId);
             List<UUID> listReviewedBookingId = new ArrayList<>();
