@@ -11,6 +11,9 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +25,27 @@ public class BookingAgentTools {
     private final HotelClient hotelClient;
     private final BookingClient bookingClient;
 
-    @Tool(description = "Checks room availability. Return structured JSON-like string containing hotels with IDs. Save the 'ID: <uuid>' for booking.")
+    private LocalDate parseDateFlexible(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return null;
+
+        List<DateTimeFormatter> formatters = Arrays.asList(
+                DateTimeFormatter.ISO_LOCAL_DATE,
+                DateTimeFormatter.ofPattern("d/M/yyyy"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                DateTimeFormatter.ofPattern("d/M/yy"),
+                DateTimeFormatter.ofPattern("dd/MM/yy")
+        );
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(dateStr, formatter);
+            } catch (DateTimeParseException e) {
+            }
+        }
+        throw new IllegalArgumentException("Invalid date format: " + dateStr);
+    }
+
+    @Tool(description = "Checks room availability. Return structured JSON-like string containing hotels with IDs. Save the 'ID: <uuid>' for booking.IMPORTANT: Date format must be strictly YYYY-MM-DD (ISO-8601). Example: 2025-12-14.")
     public String getAvailability(AvailabilityRoomRequest request) {
         try {
             ApiResponse<List<Map<String, Object>>> hotelResponse = hotelClient.searchForChat(request.getCity(), request.getRoomTypeName());
@@ -44,21 +67,29 @@ public class BookingAgentTools {
             boolean first = true;
             for (Map<String, Object> room : foundRooms) {
                 try {
+                    LocalDate checkIn = parseDateFlexible(request.getCheckInDate().toString());
+                    LocalDate checkOut = parseDateFlexible(request.getCheckOutDate().toString());
+
                     UUID roomTypeId = UUID.fromString(room.get("roomTypeId").toString());
                     String hotelName = room.get("hotelName").toString();
                     UUID hotelId = UUID.fromString(room.get("hotelId").toString());
 
                     Integer available = bookingClient.checkAvailability(
                             roomTypeId,
-                            request.getCheckInDate(),
-                            request.getCheckOutDate(),
+                            checkIn,
+                            checkOut,
                             request.getQuantity()
                     );
                     // List of returning result
                     if (available != null && available >= request.getQuantity()) {
-                        if (!first) sb.append(",\n");
-                        sb.append(String.format("    { \"hotelId\": \"%s\", \"hotelName\": \"%s\", \"roomTypeId\": \"%s\", \"available\": %d }",
-                                hotelId, hotelName, roomTypeId, available));
+                        if (!first) sb.append("\n");
+                        sb.append(String.format("""
+                            - HOTEL: %s
+                              + ID: %s
+                              + Room Type: %s (ID: %s)
+                              + Available: %d
+                            """,
+                                hotelName, hotelId, room.get("roomTypeName"), roomTypeId, available));
                         first = false;
                     }
                 } catch (Exception e) {

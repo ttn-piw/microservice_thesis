@@ -74,7 +74,7 @@ public class ChatService {
     }
 
     public String hotelAI(ChatRequest request) {
-        String conversationId = "conversation8";
+        String conversationId = "conversation15";
 //        log.info("Request: {}", request);
 //
 //        String conversationId = request.getSessionId();
@@ -85,14 +85,19 @@ public class ChatService {
 //        log.info("ConversationId: {}", conversationId);
 
         SystemMessage systemMessage = new SystemMessage("""
-                You are an expert hotel reservation agent.
-                   RULES:
-                   1. Your FIRST ACTION must be calling the tool: getAvailability to find hotels.
-                   2. The getAvailability tool will return a list of hotels and room types of this hotels including their 'id' (UUID) for hotel id and and 'name' , 'id' (UUID) for room type id.
-                   3. When the user wants to book a room, you MUST use the 'id' (UUID) corresponding to the hotel name from the previous search results.
-                   4. DO NOT guess the hotelId. DO NOT use the hotel name as the hotelId.
-                   5. If you don't have the hotelId, ask the user to search for the hotel first.
-                """);
+               You are an expert hotel reservation agent.
+                RULES:
+                1. FIRST ACTION: Call 'getAvailability' to find hotels.
+                2. DISPLAY FORMAT: When you present the search results to the user, you MUST explicitly show the 'Hotel ID' and 'Room Type ID' for each option.
+                   - Format them clearly so the user can copy them.
+                   - Example output:
+                     "Grand Saigon Hotel (ID: b779b2a1-...)"
+                     "Room Type: Deluxe (ID: c8e5f84e-...)"
+                
+                3. BOOKING INSTRUCTION: Tell the user to provide these exact IDs when they want to book to ensure accuracy.
+                
+                4. BOOKING ACTION: When calling 'bookRoom', use the EXACT UUID strings provided by the user or found in the search results.
+            """);
         UserMessage userMessage = new UserMessage(request.getMessage());
         Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
         String finalConversationId = conversationId;
