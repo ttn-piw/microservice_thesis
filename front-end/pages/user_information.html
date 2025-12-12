@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Account Information - TNEcoHotel</title>
+    <style>
+        .avatar-upload:hover .avatar-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <a href="main-page.html" class="text-2xl font-bold text-gray-800">TNEcoHotel</a>
+            <a href="main-page.html" class="text-agoda hover:text-blue-700 font-medium">
+                <i class="ri-home-4-line mr-1"></i> Home
+            </a>
+        </div>
+    </nav>
+
+    <main class="section__container py-10 px-4 md:px-10 max-w-5xl mx-auto">
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Account Settings</h1>
+            <p class="text-gray-500">Manage your profile information and account security.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+                    <div class="relative w-32 h-32 mx-auto mb-4 avatar-upload cursor-pointer group">
+                        <img id="profileAvatar" src="https://placehold.co/150" alt="Avatar"
+                            class="w-full h-full rounded-full object-cover border-4 border-blue-50">
+                        <div
+                            class="avatar-overlay absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">
+                            <i class="ri-camera-line text-white text-2xl"></i>
+                        </div>
+                        <input type="file" id="avatarInput" class="hidden" accept="image/*">
+                    </div>
+
+                    <h2 id="displayUsername" class="text-xl font-bold text-gray-800">Loading...</h2>
+                    <p id="displayEmail" class="text-sm text-gray-500 mb-4">loading@example.com</p>
+
+                    <div class="flex justify-center gap-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Active
+                            Member</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Personal Information</h3>
+                    </div>
+
+                    <form id="updateForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="fullName"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                placeholder="Enter your full name">
+                        </div>
+
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" id="username" readonly
+                                class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed"
+                                placeholder="Username">
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                                    <i class="ri-mail-line"></i>
+                                </span>
+                                <input type="email" id="email" readonly
+                                    class="w-full pl-10 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed"
+                                    placeholder="email@example.com">
+                            </div>
+                        </div>
+
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" id="phone"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="0123 456 789">
+                        </div>
+
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Birthday</label>
+                            <input type="date" id="birthday"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="gender"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Avatar URL (Optional)</label>
+                            <input type="text" id="avatarUrl"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="https://example.com/my-photo.jpg">
+                        </div>
+                         <button id="btnSave"
+                            class="w-full flex justify-center bg-blue-600 hover:bg-blue-200 text-white px-5 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <i class="ri-save-line"></i> Save Changes
+                        </button>
+                        <button id="btnReset" type="button"
+                            class="w-full flex justify-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <i class="ri-refresh-line"></i> Reset
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-200">
+                    <h3 class="text-lg font-bold text-red-600 mb-2">Danger Zone</h3>
+                    <p class="text-gray-600 text-sm mb-4">Once you deactivate your account, there is no going back.
+                        Please be certain.</p>
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">Deactivate this account</div>
+                        <button onclick="openDeactivateModal()"
+                            class="bg-white border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Deactivate Account
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="deactivateModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all scale-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ri-alarm-warning-line text-3xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Are you sure?</h3>
+                <p class="text-gray-500 text-sm mt-2">Do you really want to deactivate your account? This process cannot
+                    be undone.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeDeactivateModal()"
+                    class="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+                <button id="confirmDeactivateBtn"
+                    class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                    Yes, Deactivate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300">
+        <div id="toastContent"
+            class="bg-white border-l-4 border-green-500 shadow-lg rounded p-4 flex items-center gap-3">
+            <i id="toastIcon" class="ri-checkbox-circle-fill text-green-500 text-xl"></i>
+            <div>
+                <h4 id="toastTitle" class="font-bold text-gray-800 text-sm">Success</h4>
+                <p id="toastMessage" class="text-gray-600 text-xs">Profile updated successfully!</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/assets/js/pages/user_information.js"></script>
+</body>
+
+</html>
