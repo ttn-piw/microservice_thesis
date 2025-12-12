@@ -75,4 +75,16 @@ public class ReviewController {
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }
+
+    @GetMapping("/hotel/{hotelId}")
+    public ResponseEntity<ApiResponse> getReviewsByHotel(HttpServletRequest request,
+                                                         @PathVariable String hotelId) {
+        String path = request.getMethod() + " " + request.getRequestURI();
+        log.info(path);
+
+        ApiResponse reviews = reviewService.getReviewsByHotelId(hotelId);
+
+        HttpStatus status = reviews.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(reviews);
+    }
 }

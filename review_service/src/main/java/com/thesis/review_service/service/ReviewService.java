@@ -165,4 +165,21 @@ public class ReviewService {
                     .build();
         }
     }
+
+    public ApiResponse getReviewsByHotelId(String userId){
+        List<Review> response = reviewRepository.findReviewByHotelId(userId);
+
+        if (response.isEmpty())
+            return ApiResponse.builder()
+                    .code(404)
+                    .data(null)
+                    .message("No review founded.")
+                    .build();
+
+        return ApiResponse.builder()
+                .code(200)
+                .data(response)
+                .message("Hotel review: ")
+                .build();
+    }
 }
