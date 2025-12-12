@@ -1,4 +1,5 @@
 import { getHotelById, getRoomAvailability } from '../api/hotelService.js';
+import { getReviewsByHotelId } from '../api/reviewService.js';
 
 const API_GATEWAY_URL = 'http://localhost:8888';
 const IMAGE_BASE_URL = `${API_GATEWAY_URL}/uploads/`;
@@ -12,50 +13,23 @@ const rooms = urlParams.get('rooms') || "1"
 
 console.log(`HotelID: ${hotelId}, CheckIn: ${checkIn}, CheckOut: ${checkOut}`);
 
-async function getUserId(userEmail) {
-    try {
-        const response = await fetch(`http://localhost:8080/persons/personEmail/getPID?personEmail=${userEmail}`);
-        const data = await response.json();
-        return data[0][0];
-    } catch (error) {
-        console.error('Error fetching userId:', error);
-        alert('There was an issue fetching your user details. Please try again.');
-        throw error; 
-    }
+function formatDate(isoString) {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
-// async function fetchReviews(hotelId) {
-//     try {
-//         const response = await fetch(`http://localhost:8080/api/reviews/hotelId?hotelId=${hotelId}`);
-//         const reviews = await response.json();
-        
-//         console.log('Reviews Data:', reviews);
-//         const reviewsContainer = document.getElementById('reviewsContainer');
-//         reviewsContainer.innerHTML = '';
-
-//         if (reviews && Array.isArray(reviews) && reviews.length > 0) {
-//             reviews.forEach(review => {
-//                 const [rating, comment, category, customerName] = review;
-//                 const reviewCard = document.createElement('div');
-//                 reviewCard.className = 'review-card';
-//                 reviewCard.innerHTML = `
-//                     <div class="review-info">
-//                         <h3>${customerName || "Anonymous"}</h3>
-//                         <p class="rating">Rating: ${rating || "N/A"} ★</p>
-//                         <p class="category">Category: ${category || "Unknown"}</p>
-//                         <p>${comment || "No comment"}</p>
-//                     </div>
-//                 `;
-//                 reviewsContainer.appendChild(reviewCard);
-//             });
-//         } else {
-//             reviewsContainer.innerHTML = '<p>No reviews available for this hotel yet.</p>';
-//         }
-//     } catch (error) {
-//         console.error('Error fetching reviews:', error);
-//         reviewsContainer.innerHTML = '<p>Error loading reviews.</p>';
-//     }
-// }
+function renderStarRating(rating) {
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            starsHtml += '<i class="ri-star-fill" style="color: #fca13a; margin-right: 2px;"></i>';
+        } else {
+            starsHtml += '<i class="ri-star-line" style="color: #ccc; margin-right: 2px;"></i>';
+        }
+    }
+    return starsHtml;
+}
 
 async function loadHotelDetails(hotelId) {
     try {
@@ -322,6 +296,67 @@ window.showBookingForm = (roomId, roomName, roomImg, roomPrice, hotelId) => {
     });
 };
 
+async function loadHotelReviews(hotelId) {
+    const reviewsContainer = document.getElementById('reviewsContainer');
+    reviewsContainer.innerHTML = '<p>Loading reviews...</p>';
+
+    try {
+        const apiResponse = await getReviewsByHotelId(hotelId);
+        console.log('Reviews API Response:', apiResponse);
+
+        const reviews = Array.isArray(apiResponse) ? apiResponse : apiResponse.data;
+
+        reviewsContainer.innerHTML = ''; 
+
+        if (!reviews || reviews.length === 0) {
+            reviewsContainer.innerHTML = '<p style="color: #666; font-style: italic;">No reviews yet for this hotel.</p>';
+            return;
+        }
+        
+        const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+        const ratingTitle = document.querySelector('.reviews-container h2');
+        if(ratingTitle) ratingTitle.innerHTML = `Customer Reviews <span style="font-size: 0.8em; color: #666;">(${avgRating} <i class="ri-star-fill" style="color:#fca13a"></i>)</span>`;
+
+        reviews.forEach(review => {
+            const shortName = review.userId ? `User-${review.userId.slice(-5).toUpperCase()}` : 'Anonymous';
+            const avatarChar = shortName.charAt(shortName.indexOf('-') + 1);
+
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            
+            card.innerHTML = `
+                <div class="review-header" style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                    <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="avatar" style="
+                            width: 40px; height: 40px; 
+                            background: #3f51b5; color: white; 
+                            border-radius: 50%; display: flex; 
+                            align-items: center; justify-content: center; 
+                            font-weight: bold;">
+                            ${avatarChar}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1rem; color: #333;">${shortName}</h4>
+                            <small style="color: #888;">${formatDate(review.createdAt)}</small>
+                        </div>
+                    </div>
+                    <div class="stars">
+                        ${renderStarRating(review.rating)}
+                    </div>
+                </div>
+                <div class="review-content" style="color: #555; line-height: 1.5;">
+                    <p style="margin: 0;">${review.comment || ''}</p>
+                </div>
+            `;
+            reviewsContainer.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Failed to load reviews:', error);
+        reviewsContainer.innerHTML = '<p>Could not load reviews.</p>';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     const hotelId = urlParams.get('hotel_id'); 
@@ -363,5 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadHotelDetails(hotelId);
     loadAvailableRooms(hotelId, checkIn, checkOut);
-    // fetchReviews(hotelId);
+    if (hotelId) {
+        loadHotelReviews(hotelId);
+    }
 });

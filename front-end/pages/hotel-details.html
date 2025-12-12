@@ -8,7 +8,40 @@
     <link rel="stylesheet" href="../assets/css/hotel_detail.css" />
     <title>Hotel Detail</title>
 </head>
+<style>
+/* Reviews Section */
+.reviews-container {
+    padding: 2rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    margin-top: 20px;
+}
+
+.review-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 <body>
     <nav>
         <div class="nav__logo"><a href="main-page.html">TNEcoHotel</a></div>

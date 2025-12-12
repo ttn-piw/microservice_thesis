@@ -55,8 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const apiResponse = await getHotelMainPage();
 
-            console.log('Response Hotels:', apiResponse);
-
             if (apiResponse && apiResponse.code === 200 && Array.isArray(apiResponse.data)) {
                 
                 const hotels = apiResponse.data;
