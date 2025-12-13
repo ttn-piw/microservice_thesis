@@ -51,3 +51,20 @@ export const registerUser = async (registerData) => {
 
     return apiResponse;
 };
+
+export const deactivateAccount = async (email) => {
+    const response = await fetch(`${AUTH_API_URL}/deactive/email?email=${email}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const apiResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(apiResponse.message || 'Failed to deactivate account');
+    }
+
+    return apiResponse;
+};
