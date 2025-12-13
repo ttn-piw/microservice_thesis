@@ -2,6 +2,7 @@ package com.thesis.user_service.controller;
 
 import com.thesis.user_service.document.User;
 import com.thesis.user_service.dto.request.RegisterRequest;
+import com.thesis.user_service.dto.request.UserUpdateRequest;
 import com.thesis.user_service.dto.response.ApiResponse;
 import com.thesis.user_service.dto.response.BookingUserResponse;
 import com.thesis.user_service.service.UserService;
@@ -63,6 +64,34 @@ public class UsersController {
         }
     }
 
+    @GetMapping(value = "/email")
+    public ResponseEntity<?> getUserByEmail(HttpServletRequest request,
+                                            @RequestParam String email) {
+        String requestPath = request.getMethod() + " " + request.getRequestURI() + (request.getQueryString() != null
+                ? "?" + request.getQueryString()
+                : "");
+
+        log.info(requestPath);
+
+        var user = userService.getUserByEmail(email);
+
+        if (user != null) {
+            ApiResponse<Object> response = ApiResponse.builder()
+                    .code(HttpStatus.OK.value())
+                    .message("SUCCESS")
+                    .data(user)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } else {
+            ApiResponse<Object> response = ApiResponse.builder()
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("FAIL")
+                    .data(null)
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
     @GetMapping("/getBookingUserResponse")
     public BookingUserResponse getBookingUserResponse(@RequestParam("userId") String userId){
         return userService.getUserByUserId(userId);
@@ -85,6 +114,19 @@ public class UsersController {
         log.info(path);
 
         ApiResponse response = userService.updateInfoUser(id,request);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @PutMapping("/updateInfo/email")
+    public ResponseEntity<ApiResponse> updateUserInfoByEmail(HttpServletRequest http,
+                                                            @RequestParam String email,
+                                                            @RequestBody UserUpdateRequest request){
+        String path = http.getMethod() + " " + http.getRequestURI() + (http.getQueryString() != null ? "?" + http.getQueryString() : "") ;
+        log.info(path);
+        log.info("Request: {}", request);
+
+        ApiResponse response = userService.updateInfoUserByEmail(email,request);
         HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(response);
     }

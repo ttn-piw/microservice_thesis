@@ -163,6 +163,9 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), getUserByEmail.getPassword()))
             return ApiResponse.builder().code(400).message("Wrong password. Please try again!").data(null).build();
 
+        if (!getUserByEmail.getStatus().equals("ACTIVE"))
+            return ApiResponse.builder().code(400).message("Account is not available now! Contact admin for more").data(null).build();
+
         var token = generateToken(getUserByEmail);
         TokenResponse tokenResponse = TokenResponse
                 .builder()
@@ -201,6 +204,27 @@ public class AuthService {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public ApiResponse deactive(String email){
+        Auth auth = authRepository.getAuthByEmail(email);
+        log.info("Auth: {}", auth);
+
+        if (auth == null)
+            return ApiResponse.builder()
+                    .code(404)
+                    .message("Email not found")
+                    .data(null)
+                    .build();
+
+        auth.setStatus("DEACTIVE");
+        authRepository.save(auth);
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("Deactive account successful")
+                .data(null)
+                .build();
     }
 
 //    private SignedJWT verifyToken(String token, boolean isRefresh) throws

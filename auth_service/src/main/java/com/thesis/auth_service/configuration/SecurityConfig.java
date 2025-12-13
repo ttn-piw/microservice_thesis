@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     String PUBLIC_ENDPOINT[] = {
             "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/introspect",
-            "/api/v1/auth/test", "/api/v1/auth/testFeign"
+            "/api/v1/auth/test", "/api/v1/auth/testFeign", "/api/v1/auth/deactive/email"
     };
 
     String ADMIN_ENDPOINT[]= {

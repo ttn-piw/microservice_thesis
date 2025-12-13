@@ -1,4 +1,4 @@
-package com.thesis.booking_service.repository.httpClient;
+package com.thesis.user_service.repository.httpClient;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

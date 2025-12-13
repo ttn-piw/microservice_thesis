@@ -11,6 +11,8 @@ public interface UserRepository extends MongoRepository<User,String> {
     @Query(value = "{ '_id': ?0 }")
     Optional<User> getStudentById(ObjectId id);
 
+    Optional<User> findByUserId(String userId);
+
     User getUserByPhone(String phone);
 
     User getUserByUserId(String id);

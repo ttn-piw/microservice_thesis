@@ -100,6 +100,13 @@ public class AuthController {
                 .build();
     }
 
+    @PatchMapping("/deactive/email")
+    public ResponseEntity<ApiResponse> deactiveAccount(@RequestParam("email") String email) {
+        ApiResponse response = authService.deactive(email);
+        HttpStatus status = response.getCode() == 200 ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
+    }
+
     //    API FOR SENDING BACK DATA TO OTHER SERVICE
     @GetMapping("/getUserId")
     public String getUserId(@RequestParam("email") String email){

@@ -1,5 +1,6 @@
 package com.thesis.user_service.document;
 
+import com.mongodb.lang.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class User {
 
     String phone;
 
+    @Nullable
     String avatar;
 
     String birthday;
