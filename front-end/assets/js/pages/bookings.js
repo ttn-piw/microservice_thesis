@@ -149,7 +149,7 @@ async function handleBookingSubmit(sessionData) {
             console.log("Booking successful:", result.data);
 
             const bookingId = result.data?.id || result.id || result.data;
-            sendConfirmationEmail(fullBookingData, bookingId);
+            // sendConfirmationEmail(fullBookingData, bookingId);
 
             sessionStorage.removeItem('bookingSession');
             
