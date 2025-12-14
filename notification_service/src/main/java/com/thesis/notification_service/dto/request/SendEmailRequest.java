@@ -1,9 +1,7 @@
-package com.thesis.booking_service.dto.request;
+package com.thesis.notification_service.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Builder
 @Data

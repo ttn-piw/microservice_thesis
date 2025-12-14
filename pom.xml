@@ -23,6 +23,7 @@
 		<module>booking_service</module>
 		<module>chat_service</module>
 		<module>review_service</module>
+		<module>notification_service</module>
 	</modules>
 
 	<properties>

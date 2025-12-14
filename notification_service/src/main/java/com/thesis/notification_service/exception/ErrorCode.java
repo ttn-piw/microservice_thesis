@@ -1,4 +1,4 @@
-package com.thesis.booking_service.exception;
+package com.thesis.notification_service.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

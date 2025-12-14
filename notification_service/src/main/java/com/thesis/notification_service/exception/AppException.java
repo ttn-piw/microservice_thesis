@@ -1,5 +1,4 @@
-package com.thesis.booking_service.exception;
-
+package com.thesis.notification_service.exception;
 
 public class AppException extends  RuntimeException{
     private ErrorCode errorCode;

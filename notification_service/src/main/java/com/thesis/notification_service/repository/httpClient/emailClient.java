@@ -1,7 +1,7 @@
-package com.thesis.booking_service.repository.httpClient;
+package com.thesis.notification_service.repository.httpClient;
 
-import com.thesis.booking_service.dto.request.EmailRequest;
-import com.thesis.booking_service.dto.response.EmailResponse;
+import com.thesis.notification_service.dto.request.EmailRequest;
+import com.thesis.notification_service.dto.response.EmailResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

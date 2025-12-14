@@ -1,4 +1,4 @@
-package com.thesis.event.dto.dto;
+package com.thesis.event.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
