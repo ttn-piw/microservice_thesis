@@ -15,11 +15,13 @@ import com.thesis.booking_service.repository.BookingRepository;
 import com.thesis.booking_service.repository.httpClient.authClient;
 import com.thesis.booking_service.repository.httpClient.hotelClient;
 import com.thesis.booking_service.repository.httpClient.userClient;
+import com.thesis.event.dto.NotificationEvent;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +66,9 @@ public class BookingService {
     @Autowired
     RoomAvailableService roomAvailableService;
 
+    @Autowired
+    KafkaTemplate<String, Object> kafkaTemplate;
+
     public ApiResponse getAllBookings(){
         return ApiResponse.builder()
                 .code(200)
@@ -74,6 +79,7 @@ public class BookingService {
 
     public ApiResponse getBookingById(UUID bookingId){
         if (bookingRepository.findBookingById(bookingId) == null)
+
             return ApiResponse.builder()
                     .code(HttpStatus.NOT_FOUND.value())
                     .message(String.format("FAIL: Booking with %s not found",bookingId.toString()))
@@ -255,9 +261,7 @@ public class BookingService {
             booking.setBookedRoomTypes(bookedRoomTypeList);
             booking.setBookingGuests(bookingGuestList);
 
-            //Handle total_price without check available room
             long numberOfNights = ChronoUnit.DAYS.between(request.getCheckInDate(), request.getCheckOutDate());
-//            log.info("Number of night: {}", numberOfNights);
             BigDecimal total_price = BigDecimal.ZERO;
 
             for (RoomTypeBookingRequest roomType : request.getRoomTypes()) {
@@ -305,6 +309,39 @@ public class BookingService {
 
             BookingSuccessResponse response = new BookingSuccessResponse();
             response.setId(booking.getId());
+
+            //Kafka data
+            long nights = numberOfNights;
+
+            StringBuilder roomDetailsHtml = new StringBuilder();
+            for (BookedRoomType rt : bookedRoomTypeList) {
+                roomDetailsHtml.append(String.format("%dx %s (%d Nights)<br>",
+                        rt.getQuantity(),
+                        rt.getRoom_type_name_snapshot(),
+                        nights));
+            }
+
+            Map<String, Object> emailParams = new HashMap<>();
+            emailParams.put("guestName", request.getGuests().get(0).getFull_name());
+            emailParams.put("hotelName", getHotelName);
+            emailParams.put("bookingId", booking.getId());
+            emailParams.put("checkInDate", request.getCheckInDate().toString());
+            emailParams.put("checkOutDate", request.getCheckOutDate().toString());
+
+            emailParams.put("totalPrice", String.format("%,.0f VND", booking.getTotal_price()));
+            emailParams.put("specialRequests", request.getSpecialRequests() != null ? request.getSpecialRequests() : "None");
+            emailParams.put("roomDetails", roomDetailsHtml.toString());
+            emailParams.put("myBookingUrl", "http://127.0.0.1:5500/pages/booked.html");
+
+            NotificationEvent notificationEvent = NotificationEvent.builder()
+                    .channel("EMAIL")
+                    .recipient(request.getGuests().get(0).getEmail())
+                    .subject("Booking Confirmed: " + getHotelName)
+                    .templateCode("BOOKING_SUCCESS_TEMPLATE")
+                    .param(emailParams)
+                    .build();
+
+        kafkaTemplate.send("notification-delivery", notificationEvent);
 
             return ApiResponse.builder()
                     .code(HttpStatus.OK.value())
