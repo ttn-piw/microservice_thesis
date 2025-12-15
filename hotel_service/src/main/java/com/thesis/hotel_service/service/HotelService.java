@@ -277,7 +277,7 @@ public class HotelService {
                 .build();
     }
 
-    @Cacheable(value = "hotels", key = "{#city, #checkIn, #checkOut, #bookingRoom}")
+    @Cacheable(value = "hotels", key = "{#city}")
     public ApiResponse searchHomePage(String city, LocalDate checkIn, LocalDate checkOut, Integer bookingRoom){
         log.info("Fetching data from Database for city: {}", city); // log test redis
 
