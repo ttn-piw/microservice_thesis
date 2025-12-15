@@ -15,6 +15,8 @@ import com.thesis.hotel_service.repository.spec.HotelSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -51,6 +53,7 @@ public class HotelService {
     private RoomRepository roomRepository;
     @Autowired
     private RoomTypeRepository roomTypeRepository;
+
 
     public ApiResponse getAllHotelsMainPage(){
         try {
@@ -146,6 +149,7 @@ public class HotelService {
                 .build();
     }
 
+
     public ApiResponse createNewHotel(NewHotelRequest hotelRequest){
         //Handle business logic error before saving new hotel
         if (hotelRepository.existsByNameAndCity(
@@ -206,6 +210,7 @@ public class HotelService {
         return ApiResponse.builder().code(HttpStatus.OK.value()).message("SUCCESSFULLY:Saving new a hotel").data(newHotel.getId()).build();
     }
 
+    @CacheEvict(value = "hotels", key= "#hotelInfo.city")
     public ApiResponse updatedHotelInfo(UUID hotelId, HotelUpdateRequest hotelInfo){
         Hotel getHotelUpdated = hotelRepository.findHotelById(hotelId);
         //Check existed hotels
@@ -272,11 +277,15 @@ public class HotelService {
                 .build();
     }
 
+    @Cacheable(value = "hotels", key = "{#city, #checkIn, #checkOut, #bookingRoom}")
     public ApiResponse searchHomePage(String city, LocalDate checkIn, LocalDate checkOut, Integer bookingRoom){
+        log.info("Fetching data from Database for city: {}", city); // log test redis
+
         Specification<Hotel> spec = Specification.<Hotel>unrestricted()
                 .and(HotelSpecification.hasCity(city));
 
-        List<HotelMainPageResponse> search_hotels = hotelMapper.toHotelMainPageResponse(hotelRepository.findAll(spec));
+        List<Hotel> hotels = hotelRepository.findAll(spec);
+        List<HotelMainPageResponse> search_hotels = hotelMapper.toHotelMainPageResponse(hotels);
 
         if (search_hotels.isEmpty())
             return ApiResponse.builder()
